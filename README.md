@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/yourusername/loadstone/main/assets/logo.png" alt="LOADSTONE" width="280">
+  <img src="https://raw.githubusercontent.com/Crishan-py/LOADSTONE/main/logo.png" alt="LOADSTONE" width="280">
 </p>
 
 <h1 align="center">LOADSTONE</h1>
