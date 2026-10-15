@@ -1,0 +1,6 @@
+__pycache__/
+*.py[cod]
+loadstone_data/
+build/
+dist/
+*.spec
