@@ -111,7 +111,12 @@ class _Handler(http.server.BaseHTTPRequestHandler):
         self.send_header("X-Content-Type-Options", "nosniff")
         self.end_headers()
         if self.command != "HEAD":
-            self.wfile.write(body)
+            try:
+                self.wfile.write(body)
+            except OSError:
+                # The client hung up mid-response. Nothing left to do, and the
+                # reply is not worth a traceback.
+                self.close_connection = True
 
     def _send_json(self, status, payload):
         self._send_bytes(json.dumps(payload).encode(), "application/json", status)
@@ -125,15 +130,23 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             return
         self._send_bytes(body, content_type)
 
-    def _chunk(self, payload: bytes):
-        self.wfile.write(f"{len(payload):X}\r\n".encode() + payload + b"\r\n")
-        self.wfile.flush()
+    def _chunk(self, payload: bytes) -> bool:
+        """Write one chunk. Returns False once the peer is gone, which is the
+        SSE loop's cue to stop -- swallowing the error alone would leave it
+        looping on a socket nobody is reading."""
+        try:
+            self.wfile.write(f"{len(payload):X}\r\n".encode() + payload + b"\r\n")
+            self.wfile.flush()
+            return True
+        except OSError:
+            self.close_connection = True
+            return False
 
     def _sse(self, name, data):
         """Write one SSE frame. The `data:` prefix is mandatory -- a bare JSON
         line is silently discarded by EventSource, so the client just goes quiet."""
         frame = json.dumps({"name": name, "data": data}).encode()
-        self._chunk(b"data: " + frame + b"\n\n")
+        return self._chunk(b"data: " + frame + b"\n\n")
 
     def _end_chunks(self):
         try:
@@ -173,18 +186,21 @@ class _Handler(http.server.BaseHTTPRequestHandler):
 
             # Resync from live state rather than replaying progress events a
             # reconnecting client missed: its percentages would be a lie.
-            self._sse("stateChanged", self.api._state_dict())
+            if not self._sse("stateChanged", self.api._state_dict()):
+                return
 
             while self.bus.is_active(q):
                 try:
                     event = q.get(timeout=15)
                 except queue.Empty:
-                    self._chunk(b": heartbeat\n\n")
+                    if not self._chunk(b": heartbeat\n\n"):
+                        return
                     continue
                 if event is None:
                     break
-                self._sse(event[0], event[1])
-        except (BrokenPipeError, ConnectionAbortedError, ConnectionResetError, OSError):
+                if not self._sse(event[0], event[1]):
+                    return
+        except OSError:
             pass
         finally:
             self.bus.unsubscribe(q)
