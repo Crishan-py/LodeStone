@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Crishan-py/LOADSTONE/main/logo.png" alt="LOADSTONE" width="280">
+  <img src="https://raw.githubusercontent.com/Crishan-py/LodeStone/main/logo.png" alt="LodeStone" width="280">
 </p>
 
-<h1 align="center">LOADSTONE</h1>
+<h1 align="center">LodeStone</h1>
 
 <p align="center">
   <strong>A clean, zero-dependency Minecraft launcher for Windows</strong><br>

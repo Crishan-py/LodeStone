@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LOADSTONE</title>
+<title>LodeStone</title>
 <style>
 /* ---------------------------------------------------------------- tokens */
 :root {
@@ -272,7 +272,7 @@ table.tbl td { padding: 9px 10px; border-bottom: 1px solid var(--line-soft); }
     <div class="brand">
       <img src="/logo.png" alt="">
       <div>
-        <div class="brand-text">LOADSTONE</div>
+        <div class="brand-text">LodeStone</div>
         <div class="brand-sub">Minecraft launcher</div>
       </div>
     </div>
@@ -309,7 +309,7 @@ async function callApi(method, ...args) {
   try {
     const res = await fetch("/rpc", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-Loadstone-Token": TOKEN },
+      headers: { "Content-Type": "application/json", "X-Lodestone-Token": TOKEN },
       body: JSON.stringify({ method, args }),
     });
     return await res.json();
@@ -322,7 +322,7 @@ function connectEvents() {
   const src = new EventSource("/events?token=" + encodeURIComponent(TOKEN));
   src.onmessage = (ev) => {
     const msg = JSON.parse(ev.data);
-    window.__loadstoneEvent && window.__loadstoneEvent(msg.name, msg.data);
+    window.__lodestoneEvent && window.__lodestoneEvent(msg.name, msg.data);
   };
 }
 
@@ -1254,7 +1254,7 @@ $("#modal-root").addEventListener("click", (e) => { if (e.target.hasAttribute("d
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
 
 /* ============================================================ events */
-window.__loadstoneEvent = function (name, data) {
+window.__lodestoneEvent = function (name, data) {
   data = data || {};
   switch (name) {
     case "stateChanged":

@@ -19,7 +19,7 @@ def _app_dir() -> Path:
     return Path(__file__).resolve().parent.parent
 RESOURCE_DIR = _resource_dir()
 APP_DIR = _app_dir()
-DATA_DIR = Path(os.environ.get("LOADSTONE_DATA", str(APP_DIR / "loadstone_data")))
+DATA_DIR = Path(os.environ.get("LODESTONE_DATA", str(APP_DIR / "lodestone_data")))
 INSTANCES_DIR = DATA_DIR / "instances"
 VERSIONS_DIR = DATA_DIR / "versions"
 LIBRARIES_DIR = DATA_DIR / "libraries"

@@ -97,7 +97,7 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             import secrets
             # EventSource cannot set headers, so the token may arrive in the
             # query string; fetch() sends it as a header instead.
-            supplied = token or self.headers.get("X-Loadstone-Token") or ""
+            supplied = token or self.headers.get("X-Lodestone-Token") or ""
             if not secrets.compare_digest(supplied, self.token):
                 self._deny("bad token")
                 return True
@@ -271,7 +271,7 @@ def serve():
     stopping = threading.Event()
 
     token = secrets.token_urlsafe(24)
-    handler = type("LoadstoneHandler", (_Handler,), {"api": api, "bus": bus, "token": token})
+    handler = type("LodeStoneHandler", (_Handler,), {"api": api, "bus": bus, "token": token})
     # Port 0 lets the OS pick a free port: no fixed port to collide with, and
     # nothing for a local process to guess at before the token check.
     httpd = _Server(("127.0.0.1", 0), handler)

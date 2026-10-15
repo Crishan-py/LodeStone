@@ -23,10 +23,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 # launcher.log accumulates and launcher.py reads this at import time, so a run
 # against a shared data dir would read the *previous* run's port.
-os.environ["LOADSTONE_DATA"] = tempfile.mkdtemp(prefix="loadstone-smoke-")
+os.environ["LODESTONE_DATA"] = tempfile.mkdtemp(prefix="lodestone-smoke-")
 
-import LOADSTONE
-from LOADSTONE import paths as launcher_paths  # noqa: E402
+import LodeStone
+from LodeStone import paths as launcher_paths  # noqa: E402
 
 PASS, FAIL = [], []
 
@@ -66,7 +66,7 @@ def post(port, token, method, args=None, headers=None, ctype="application/json")
     body = json.dumps({"method": method, "args": args or []}).encode()
     hdrs = {"Content-Type": ctype}
     if token is not None:
-        hdrs["X-Loadstone-Token"] = token
+        hdrs["X-Lodestone-Token"] = token
     hdrs.update(headers or {})
     req = urllib.request.Request(f"http://127.0.0.1:{port}/rpc", data=body, headers=hdrs)
     try:
@@ -85,7 +85,7 @@ def main():
     webbrowser.open = lambda url: opened.append(url)
 
     print("smoke: starting launcher transport")
-    thread = threading.Thread(target=LOADSTONE.serve, daemon=True)
+    thread = threading.Thread(target=LodeStone.serve, daemon=True)
     thread.start()
 
     url = read_url()

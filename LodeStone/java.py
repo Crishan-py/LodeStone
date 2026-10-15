@@ -137,7 +137,7 @@ def mojang_runtime_platform() -> str:
     return "linux-i386" if arch == "32" else "linux"
 def managed_java_path(component: str):
     root = RUNTIME_DIR / component
-    if not (root / ".loadstone_installed").exists():
+    if not (root / ".lodestone_installed").exists():
         return None
     for rel in ("bin/java.exe", "bin/java", "jre.bundle/Contents/Home/bin/java"):
         p = root / rel
@@ -200,7 +200,7 @@ def install_managed_java(component: str, tracker):
             except OSError:
                 pass
 
-    (root / ".loadstone_installed").write_text(str(time.time()), encoding="utf-8")
+    (root / ".lodestone_installed").write_text(str(time.time()), encoding="utf-8")
     path = managed_java_path(component)
     if not path:
         raise RuntimeError("Java runtime was downloaded but no java executable was found in it.")

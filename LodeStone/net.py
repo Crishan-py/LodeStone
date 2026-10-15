@@ -23,7 +23,7 @@ FORGE_METADATA_URL = FORGE_MAVEN + "maven-metadata.xml"
 MODRINTH_API = "https://api.modrinth.com/v2"
 RESOURCES_BASE_URL = "https://resources.download.minecraft.net"
 LIBRARIES_BASE_URL = "https://libraries.minecraft.net/"
-USER_AGENT = "LOADSTONE/1.0 (+https://example.invalid)"
+USER_AGENT = "LodeStone/1.0 (+https://example.invalid)"
 CREATE_NO_WINDOW = 0x08000000 if os.name == "nt" else 0
 _INVALID_NAME_RE = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
 def http_get_json(url: str, timeout: int = 20, retries: int = 2):

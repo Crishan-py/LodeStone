@@ -36,7 +36,7 @@ def build_launch_command(meta: dict, account: dict, memory_mb: int, java_exe: st
         "library_directory": str(LIBRARIES_DIR),
         "classpath_separator": classpath_sep(),
         "classpath": classpath_sep().join(classpath_list),
-        "launcher_name": "LOADSTONE",
+        "launcher_name": "LodeStone",
         "launcher_version": "1.0",
     }
 
@@ -87,7 +87,7 @@ def _log_tail(path: Path, max_bytes: int = 4000) -> str:
         return ""
 def _explain_crash(tail: str) -> str:
     if "UnsupportedClassVersionError" in tail or "class file version" in tail:
-        return "This Minecraft version needs a newer Java. Clear the custom Java path in Settings so LOADSTONE can pick one."
+        return "This Minecraft version needs a newer Java. Clear the custom Java path in Settings so LodeStone can pick one."
     if "Could not create the Java Virtual Machine" in tail or "Invalid maximum heap size" in tail:
         return "Java couldn't start with that memory setting. Try lowering the allocated memory in Settings."
     if "ClassNotFoundException" in tail or "NoClassDefFoundError" in tail:

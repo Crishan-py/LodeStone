@@ -1,6 +1,6 @@
 __pycache__/
 *.py[cod]
-loadstone_data/
+lodestone_data/
 build/
 dist/
 *.spec

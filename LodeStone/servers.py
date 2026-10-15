@@ -25,10 +25,10 @@ from .paths import DATA_DIR, log_exception
 
 SERVERS_DIR = DATA_DIR / "servers"
 SERVERS_DIR.mkdir(parents=True, exist_ok=True)
-SERVER_META_FILE = "loadstone_server.json"
+SERVER_META_FILE = "lodestone_server.json"
 SERVER_SOFTWARE = ("vanilla", "paper", "fabric")
 PAPER_API = "https://fill.papermc.io/v3/projects/paper"
-PAPER_USER_AGENT = "LOADSTONE/1.3 (https://github.com/snigglaberry/loadstone)"
+PAPER_USER_AGENT = "LodeStone/1.3 (https://github.com/snigglaberry/lodestone)"
 EULA_URL = "https://aka.ms/MinecraftEULA"
 PLUGIN_LOADERS = ["paper", "spigot", "bukkit"]
 PLAYER_NAME_RE = re.compile(r"^[A-Za-z0-9_.]{1,16}$")
@@ -103,7 +103,7 @@ def write_properties(path: Path, updates: dict):
             else:
                 lines.append(line)
     else:
-        lines.append("#Minecraft server properties (written by LOADSTONE)")
+        lines.append("#Minecraft server properties (written by LodeStone)")
     for k, v in updates.items():
         if k not in seen:
             lines.append(f"{k}={_prop_value(v)}")
@@ -121,7 +121,7 @@ def build_server_properties(cfg: dict, version: str) -> dict:
     diff = cfg.get("difficulty") if cfg.get("difficulty") in ("peaceful", "easy", "normal", "hard") else "easy"
     hardcore = bool(cfg.get("hardcore"))
     props = {
-        "motd": (cfg.get("motd") or "A LOADSTONE server")[:120],
+        "motd": (cfg.get("motd") or "A LodeStone server")[:120],
         "server-port": _clamp_int(cfg.get("port"), 1024, 65535, 25565),
         "max-players": _clamp_int(cfg.get("max_players"), 1, 1000, 20),
         "gamemode": gm,
@@ -554,7 +554,7 @@ class ServerMixin:
                                        creationflags=CREATE_NO_WINDOW, shell=False)
             with self._srv_lock:
                 self._srv_rt[name] = rt
-            self._srv_line(rt, f"[LOADSTONE] Starting {meta['software']} {meta['version']} with {mem} MB...")
+            self._srv_line(rt, f"[LodeStone] Starting {meta['software']} {meta['version']} with {mem} MB...")
             threading.Thread(target=self._srv_reader, args=(rt, meta), daemon=True).start()
             threading.Thread(target=self._srv_flusher, args=(rt,), daemon=True).start()
             threading.Thread(target=self._srv_monitor, args=(rt,), daemon=True).start()
@@ -631,7 +631,7 @@ class ServerMixin:
             rt.status = "offline"
             rt.players.clear()
             rt.exited.set()
-            self._srv_line(rt, f"[LOADSTONE] Server stopped (exit code {code}).")
+            self._srv_line(rt, f"[LodeStone] Server stopped (exit code {code}).")
             self.emit("serverPlayers", {"server": name, "players": []})
             self._srv_push()
             if rt.eula_needed and not self._srv_eula_accepted(name):
@@ -693,7 +693,7 @@ class ServerMixin:
             meta = read_server_meta(rt.name) or meta
             meta["gamerules_applied"] = True
             write_server_meta(rt.name, meta)
-            self._srv_line(rt, "[LOADSTONE] Game rules applied.")
+            self._srv_line(rt, "[LodeStone] Game rules applied.")
         except Exception:
             log_exception("apply gamerules")
 
@@ -822,7 +822,7 @@ class ServerMixin:
             if not meta:
                 return {"success": False, "error": "Server not found."}
             props = read_properties(server_dir(name) / "server.properties")
-            s = {"motd": props.get("motd", "A LOADSTONE server"),
+            s = {"motd": props.get("motd", "A LodeStone server"),
                  "memory_mb": _clamp_int(meta.get("memory_mb"), 512, 65536, 2048),
                  "gamemode": props.get("gamemode", "survival"), "difficulty": props.get("difficulty", "easy"),
                  "offline_mode": props.get("online-mode", "false").strip().lower() != "true"}
@@ -844,7 +844,7 @@ class ServerMixin:
             st = dict(settings or {})
             props = {}
             if "motd" in st:
-                props["motd"] = str(st["motd"] or "A LOADSTONE server")[:120]
+                props["motd"] = str(st["motd"] or "A LodeStone server")[:120]
             if st.get("gamemode") in ("survival", "creative", "adventure", "spectator"):
                 props["gamemode"] = st["gamemode"]
             if st.get("difficulty") in ("peaceful", "easy", "normal", "hard"):
@@ -908,9 +908,9 @@ class ServerMixin:
             elif action == "feed":
                 cmds = [f"effect give {player} minecraft:saturation 1 30 true"]
             elif action == "kick":
-                cmds = [f"kick {player} Kicked from LOADSTONE"]
+                cmds = [f"kick {player} Kicked from LodeStone"]
             elif action == "ban":
-                cmds = [f"ban {player} Banned from LOADSTONE"]
+                cmds = [f"ban {player} Banned from LodeStone"]
             elif action == "set_health":
                 hp = _clamp_int(value, 1, 1024, 20)
                 cmds = [f"effect give {player} minecraft:instant_health 1 30 true"]

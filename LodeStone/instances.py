@@ -76,7 +76,7 @@ def unique_instance_name(base: str) -> str:
         candidate = f"{cleaned} ({n})"
         n += 1
     return candidate
-CHANGELOG_REPO = "snigglaberry/loadstone"
+CHANGELOG_REPO = "snigglaberry/lodestone"
 APP_VERSION = "1.4"
 CHANGELOG_CACHE = DATA_DIR / "changelog_cache.json"
 _changelog_mem = {"at": 0.0, "value": None}

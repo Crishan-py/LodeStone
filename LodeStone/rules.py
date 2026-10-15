@@ -71,7 +71,7 @@ def merge_arguments(parent, child):
     }
 DEFAULT_MODERN_JVM_ARGS = [
     "-Djava.library.path=${natives_directory}",
-    "-Dminecraft.launcher.brand=loadstone",
+    "-Dminecraft.launcher.brand=lodestone",
     "-Dminecraft.launcher.version=1.0",
     "-cp",
     "${classpath}",

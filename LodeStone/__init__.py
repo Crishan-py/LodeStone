@@ -1,4 +1,4 @@
-"""LOADSTONE -- a Minecraft launcher for Windows.
+"""LodeStone -- a Minecraft launcher for Windows.
 
 Modules, in dependency order:
 

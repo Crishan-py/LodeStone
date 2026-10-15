@@ -426,7 +426,7 @@ class API(ServerMixin):
                     skin = png_uri(skin_path.read_bytes())
                 if cape is None and cape_path.is_file():
                     try:
-                        cape = _CAPE_BY_ID.get((base / ".loadstone_cape").read_text(encoding="utf-8").strip())
+                        cape = _CAPE_BY_ID.get((base / ".lodestone_cape").read_text(encoding="utf-8").strip())
                     except OSError:
                         cape = None
                 if skin and cape:
@@ -539,10 +539,10 @@ class API(ServerMixin):
                 cape_path = base / "capes" / f"{username}.png"
                 if cape is None:
                     cape_path.unlink(missing_ok=True)
-                    (base / ".loadstone_cape").unlink(missing_ok=True)
+                    (base / ".lodestone_cape").unlink(missing_ok=True)
                 else:
                     _write_bytes_atomic(cape_path, data)
-                    _write_bytes_atomic(base / ".loadstone_cape", cape["id"].encode("utf-8"))
+                    _write_bytes_atomic(base / ".lodestone_cape", cape["id"].encode("utf-8"))
             return self._local_bulk(install if cape else None, write, write_config=bool(cape))
         except ValueError as exc:
             return {"success": False, "error": str(exc)}
@@ -556,7 +556,7 @@ class API(ServerMixin):
             def write(base, username):
                 (base / "skins" / f"{username}.png").unlink(missing_ok=True)
                 (base / "capes" / f"{username}.png").unlink(missing_ok=True)
-                (base / ".loadstone_cape").unlink(missing_ok=True)
+                (base / ".lodestone_cape").unlink(missing_ok=True)
             return self._local_bulk(None, write, write_config=False)
         except Exception as exc:
             log_exception("local_reset")
@@ -1429,9 +1429,9 @@ class API(ServerMixin):
                 elif "forge" in deps:
                     loader, loader_version = "forge", deps["forge"]
                 elif "neoforge" in deps:
-                    raise RuntimeError("This modpack needs NeoForge, which LOADSTONE doesn't support yet.")
+                    raise RuntimeError("This modpack needs NeoForge, which LodeStone doesn't support yet.")
                 elif "quilt-loader" in deps:
-                    raise RuntimeError("This modpack needs Quilt, which LOADSTONE doesn't support yet.")
+                    raise RuntimeError("This modpack needs Quilt, which LodeStone doesn't support yet.")
 
                 name = unique_instance_name(index.get("name") or project.get("title") or "Modpack")
                 self._make_instance(name, mc_version, loader, loader_version)
