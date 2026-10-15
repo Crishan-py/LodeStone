@@ -10,7 +10,7 @@ from .paths import DATA_DIR, INSTANCES_DIR
 
 INSTALL_SCHEMA = 2
 INSTANCE_ICONS = {"box", "shirt", "flame", "hammer", "square", "circle", "triangle", "star",
-                  "hexagon", "diamond", "heart", "cat", "ghost", "skull", "zap", "gem", "oneclient"}
+                  "hexagon", "diamond", "heart", "cat", "ghost", "skull", "zap", "gem"}
 def instance_dir(name: str) -> Path:
     safe = sanitize_instance_name(name)
     return INSTANCES_DIR / safe
@@ -76,7 +76,6 @@ def unique_instance_name(base: str) -> str:
         candidate = f"{cleaned} ({n})"
         n += 1
     return candidate
-ONECLIENT_PROJECT = "oneclient-modpack"
 CHANGELOG_REPO = "snigglaberry/loadstone"
 APP_VERSION = "1.4"
 CHANGELOG_CACHE = DATA_DIR / "changelog_cache.json"

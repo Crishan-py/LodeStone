@@ -18,7 +18,7 @@ from .catalog import ADDON_TYPES, _catalog_cached, _catalog_error, _catalog_tree
 from .downloads import ProgressTracker, download_all, entry_weight
 from .importer import _copy_tree_contents, _find_scanned_instance, _source_paths, scan_all_launchers
 from .installer import Installer
-from .instances import APP_VERSION, CHANGELOG_CACHE, CHANGELOG_REPO, INSTALL_SCHEMA, INSTANCE_ICONS, ONECLIENT_PROJECT, _changelog_mem, ensure_game_layout, find_account, instance_config_dir, instance_dir, instance_game_dir, instance_mods_dir, is_installed, list_instances, public_account, read_instance_meta, unique_instance_name, update_instance_meta, write_instance_meta
+from .instances import APP_VERSION, CHANGELOG_CACHE, CHANGELOG_REPO, INSTALL_SCHEMA, INSTANCE_ICONS, _changelog_mem, ensure_game_layout, find_account, instance_config_dir, instance_dir, instance_game_dir, instance_mods_dir, is_installed, list_instances, public_account, read_instance_meta, unique_instance_name, update_instance_meta, write_instance_meta
 from .java import _JAVA_UI_CACHE, console_java, detect_java_for_ui, java_info_from_meta, resolve_java
 from .launch import _explain_crash, _log_tail, build_launch_command
 from .meta import _dir_size, _version_tuple, meta_cache, pick_best_version, primary_file
@@ -96,7 +96,6 @@ class API(ServerMixin):
                 "playtime": int(meta.get("playtime", 0)),
                 "icon": meta.get("icon") if meta.get("icon") in INSTANCE_ICONS else None,
                 "created": meta.get("created"),
-                "oneclient": bool(meta.get("oneclient")),
             })
         active_instance_name = settings.get("active_instance")
         active_instance = next(
@@ -127,8 +126,7 @@ class API(ServerMixin):
                 "server_beta_seen": bool(settings.get("server_beta_seen", False)),
                 "local_skin_warning_seen": [x for x in (settings.get("local_skin_warning_seen") or [])
                                             if isinstance(x, str)],
-                "oneclient_notice_seen": bool(settings.get("oneclient_notice_seen", False)),
-            },
+                },
             "java_ok": java_path is not None,
             "java_version": java_line,
         }
@@ -622,23 +620,7 @@ class API(ServerMixin):
         ensure_game_layout(name, loader)
         return meta
 
-    def get_oneclient_info(self):
-
-        try:
-            params = {"loaders": json.dumps(["fabric"])}
-            versions = http_get_json(
-                f"{MODRINTH_API}/project/{ONECLIENT_PROJECT}/version?" + urllib.parse.urlencode(params))
-            supported = set()
-            for v in versions:
-                supported.update(v.get("game_versions") or [])
-            if not supported:
-                return {"success": False, "error": "OneClient has no downloadable versions right now."}
-            return {"success": True, "versions": sorted(supported)}
-        except Exception:
-            log_exception("get_oneclient_info")
-            return {"success": False, "error": "Couldn't reach Modrinth to check OneClient's supported versions."}
-
-    def create_instance(self, version, loader, loader_version, instance_name, oneclient=False):
+    def create_instance(self, version, loader, loader_version, instance_name):
 
 
         try:
@@ -653,26 +635,8 @@ class API(ServerMixin):
         if loader in ("fabric", "forge") and not loader_version:
             return {"success": False, "error": f"Select a {loader.capitalize()} version."}
 
-        pack_version = None
-        if oneclient:
-            if loader != "fabric":
-                return {"success": False, "error": "OneClient only works with Fabric."}
-            try:
-                pack_version = self._find_version(ONECLIENT_PROJECT, "fabric", version)
-            except Exception:
-                log_exception("oneclient lookup")
-                return {"success": False, "error": "Couldn't reach Modrinth to get OneClient."}
-            if not pack_version:
-                return {"success": False, "error": f"OneClient doesn't support Minecraft {version}."}
-
         try:
             self._make_instance(name, version, loader, loader_version)
-            if pack_version:
-                update_instance_meta(name, lambda m: m.__setitem__("oneclient", True))
-                with self._proc_lock:
-                    self._installing.add(name)
-                threading.Thread(target=self._oneclient_worker, args=(name, pack_version),
-                                 daemon=True).start()
             self.push_state()
             return {"success": True}
         except Exception as exc:
@@ -1238,8 +1202,6 @@ class API(ServerMixin):
                     settings["ui_style"] = patch["ui_style"]
                 if "server_beta_seen" in patch:
                     settings["server_beta_seen"] = bool(patch["server_beta_seen"])
-                if "oneclient_notice_seen" in patch:
-                    settings["oneclient_notice_seen"] = bool(patch["oneclient_notice_seen"])
                 if isinstance(patch.get("local_skin_warning_seen"), list):
                     settings["local_skin_warning_seen"] = [str(x) for x in patch["local_skin_warning_seen"]][:200]
             settings = settings_store.update(_apply)
@@ -1421,73 +1383,6 @@ class API(ServerMixin):
         except Exception as exc:
             log_exception("install_addon")
             return {"success": False, "error": f"Failed to install: {exc}"}
-
-    def _oneclient_worker(self, name, version):
-
-        pack_path = None
-        try:
-            self.emit("installStarted", {"instance": name, "title": f"Installing OneClient into {name}..."})
-            tracker = ProgressTracker(self.emit)
-            tracker.set_task("Downloading OneClient", force=True)
-            files = version.get("files", [])
-            pack_file = (next((f for f in files if f.get("filename", "").endswith(".mrpack")), None)
-                         or primary_file(version))
-            if not pack_file:
-                raise RuntimeError("OneClient has no downloadable file for this version.")
-            pack_path = TMP_DIR / f"oneclient-{uuid.uuid4().hex[:8]}.mrpack"
-            tracker.reset(pack_file.get("size") or 1_000_000)
-            http_download(pack_file["url"], pack_path, pack_file.get("size"),
-                          (pack_file.get("hashes") or {}).get("sha1"), tracker.add)
-
-            game_dir = instance_game_dir(name)
-            with zipfile.ZipFile(pack_path) as zf:
-                index = json.loads(zf.read("modrinth.index.json").decode("utf-8"))
-                deps = index.get("dependencies", {})
-                items = []
-                for f in index.get("files", []):
-                    if (f.get("env") or {}).get("client") == "unsupported":
-                        continue
-                    rel = f.get("path", "")
-                    urls = f.get("downloads") or []
-                    if not rel or not urls or not is_within(game_dir, game_dir / rel):
-                        continue
-                    items.append(({"path": rel, "url": urls[0], "size": f.get("fileSize"),
-                                   "sha1": (f.get("hashes") or {}).get("sha1")}, game_dir))
-                tracker.reset(sum(entry_weight(e) for e, _ in items) + 1)
-                tracker.set_task("Downloading OneClient mods", force=True)
-                download_all(items, tracker, workers=8)
-
-                tracker.set_task("Applying overrides", force=True)
-                for member in zf.namelist():
-                    for prefix in ("overrides/", "client-overrides/"):
-                        if member.startswith(prefix):
-                            rel = member[len(prefix):]
-                            dest = game_dir / rel
-                            if rel and is_within(game_dir, dest) and not member.endswith("/"):
-                                dest.parent.mkdir(parents=True, exist_ok=True)
-                                dest.write_bytes(zf.read(member))
-                            break
-
-            def _sync(m):
-                if deps.get("fabric-loader"):
-                    m["loader_version"] = deps["fabric-loader"]
-                if deps.get("minecraft"):
-                    m["version"] = deps["minecraft"]
-            update_instance_meta(name, _sync)
-            self.emit("installFinished", {"instance": name, "message": f"OneClient installed into {name}"})
-        except Exception as exc:
-            log_exception("oneclient install failed")
-            shutil.rmtree(instance_dir(name), ignore_errors=True)
-            self.emit("installError", {"message": f"OneClient install failed: {exc}"})
-        finally:
-            if pack_path:
-                try:
-                    Path(pack_path).unlink(missing_ok=True)
-                except OSError:
-                    pass
-            with self._proc_lock:
-                self._installing.discard(name)
-            self.push_state()
 
     def install_modpack(self, project_id):
         with self._proc_lock:

@@ -102,14 +102,18 @@ def main():
     check("token is not in the path", "#" in url and token and token not in base)
 
     # --- static files ---
-    for path, needle, label in (
-        ("/", b"<!DOC", "serves the UI at /"),
-        ("/index.html", b"<!DOC", "serves the UI at /index.html"),
-        ("/background.png", b"\x89PNG", "serves background.png"),
+    # HTML doctype is case-insensitive; PNG magic bytes are not, and .lower()
+    # would corrupt them.
+    for path, needle, label, fold in (
+        ("/", b"<!doc", "serves the UI at /", True),
+        ("/index.html", b"<!doc", "serves the UI at /index.html", True),
+        ("/logo.png", b"\x89PNG", "serves logo.png", False),
+        ("/background.png", b"\x89PNG", "serves background.png", False),
     ):
         with urllib.request.urlopen(f"http://127.0.0.1:{port}{path}", timeout=10) as r:
             body = r.read(64)
-        check(label, body.startswith(needle), f"status {r.status}")
+        probe = body[:16].lower() if fold else body[:16]
+        check(label, probe.startswith(needle), f"status {r.status}")
 
     try:
         urllib.request.urlopen(f"http://127.0.0.1:{port}/nope", timeout=10)

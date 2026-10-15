@@ -96,5 +96,4 @@ settings_store = JsonStore(SETTINGS_FILE, {
     "server_beta_seen": False,
     "local_skin_warning_seen": [],
     "playtime_seconds": 0,
-    "oneclient_notice_seen": False,
 })

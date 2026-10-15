@@ -165,6 +165,8 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             return self._send_file("index.html", "text/html; charset=utf-8")
         if path == "/background.png":
             return self._send_file("background.png", "image/png")
+        if path == "/logo.png":
+            return self._send_file("logo.png", "image/png")
         self._send_json(404, {"success": False, "error": "not found"})
 
     do_HEAD = do_GET
