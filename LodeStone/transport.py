@@ -208,15 +208,39 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             self.bus.unsubscribe(q)
             self._end_chunks()
 
+    def _drain(self):
+        """Consume the request body before answering early.
+
+        Replying without reading the request leaves unread bytes on a keep-alive
+        socket. If the peer is still sending, it sees the connection reset
+        instead of the status we just wrote -- an intermittent
+        ConnectionAbortedError that looked like a flaky test rather than a
+        protocol bug.
+        """
+        try:
+            n = int(self.headers.get("Content-Length") or 0)
+        except ValueError:
+            self.close_connection = True
+            return
+        remaining = min(n, 8 * 1024 * 1024)
+        while remaining > 0:
+            chunk = self.rfile.read(min(remaining, 65536))
+            if not chunk:
+                break
+            remaining -= len(chunk)
+
     def do_POST(self):
         path, _, query = self.path.partition("?")
         if path != "/rpc":
+            self._drain()
             return self._send_json(404, {"success": False, "error": "not found"})
         if self._reject(urllib.parse.parse_qs(query).get("token", [""])[0]):
+            self._drain()
             return
 
         ctype = (self.headers.get("Content-Type") or "").split(";")[0].strip().lower()
         if ctype != "application/json":
+            self._drain()
             return self._deny("expected application/json", 415)
 
         try:

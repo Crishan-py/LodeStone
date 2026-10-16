@@ -5,260 +5,269 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LodeStone</title>
 <style>
-/* ---------------------------------------------------------------- tokens */
+/* ============================================================ foundation */
 :root {
-  --bg: #0a0b0d;
-  --surface: #111318;
-  --surface-2: #171a20;
-  --surface-3: #1e222a;
-  --line: #242831;
-  --line-soft: #1b1e25;
-  --text: #e9ecf1;
-  --text-2: #a8b0bc;
-  --dim: #6f7783;
-  --accent: #93a9c4;
-  --accent-ink: #0d1014;
-  --accent-soft: rgba(147,169,196,.13);
-  --good: #74c294;
-  --warn: #d7a94a;
-  --bad: #d97f75;
-  --r-lg: 14px;
-  --r-md: 10px;
-  --r-sm: 7px;
-  --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 28px -12px rgba(0,0,0,.6);
+  --ink:      #07080a;
+  --panel:    #0e1013;
+  --raised:   #14171b;
+  --hover:    #1a1e23;
+  --edge:     #1e232a;
+  --edge-lit: #2b323b;
+  --fg:       #e6e9ee;
+  --fg-2:     #9aa3ae;
+  --fg-3:     #656e7a;
+  --brand:    #56d68a;
+  --brand-dk: #0c1510;
+  --brand-gl: rgba(86,214,138,.14);
+  --warn:     #e0b04a;
+  --stop:     #e0685e;
+  --r:        4px;
+  --r-lg:     8px;
+  --ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --num: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
 }
-:root[data-theme="light"] {
-  --bg: #f4f5f7;
-  --surface: #ffffff;
-  --surface-2: #f7f8fa;
-  --surface-3: #eef0f3;
-  --line: #dfe3e9;
-  --line-soft: #eaedf1;
-  --text: #14171c;
-  --text-2: #4a515c;
-  --dim: #7b838f;
-  --accent: #4a6787;
-  --accent-ink: #ffffff;
-  --accent-soft: rgba(74,103,135,.10);
-  --good: #2f8a5b;
-  --bad: #b8504a;
-  --shadow: 0 1px 2px rgba(16,20,26,.06), 0 8px 24px -14px rgba(16,20,26,.2);
+:root[data-mode="day"] {
+  --ink:      #f2f3f5;
+  --panel:    #ffffff;
+  --raised:   #f7f8fa;
+  --hover:    #eceef1;
+  --edge:     #e0e4e9;
+  --edge-lit: #c9d0d8;
+  --fg:       #0f1216;
+  --fg-2:     #545c67;
+  --fg-3:     #838b96;
+  --brand:    #16794a;
+  --brand-dk: #ffffff;
+  --brand-gl: rgba(22,121,74,.10);
+  --warn:     #9a6b12;
+  --stop:     #b03a32;
 }
 
 * { box-sizing: border-box; }
 html, body { height: 100%; }
 body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font: 400 14px/1.55 var(--sans);
+  margin: 0; background: var(--ink); color: var(--fg);
+  font: 400 14px/1.5 var(--ui);
   -webkit-font-smoothing: antialiased;
-  letter-spacing: -0.006em;
 }
-h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.022em; }
-h1 { font-size: 22px; }
-h2 { font-size: 16px; }
-a { color: var(--accent); }
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 99px; border: 3px solid transparent; background-clip: content-box; }
-::-webkit-scrollbar-thumb:hover { background: var(--line); background-clip: content-box; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+h1, h2, h3 { margin: 0; font-weight: 620; }
+h1 { font-size: 26px; letter-spacing: -.028em; line-height: 1.15; }
+h2 { font-size: 15px; letter-spacing: -.01em; }
+::selection { background: var(--brand); color: var(--brand-dk); }
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-thumb { background: var(--edge-lit); border-radius: 0; }
+::-webkit-scrollbar-track { background: var(--ink); }
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
 
-/* ---------------------------------------------------------------- layout */
-.app { display: grid; grid-template-columns: 244px 1fr; min-height: 100vh; }
-
-.side {
-  background: var(--surface);
-  border-right: 1px solid var(--line-soft);
-  display: flex; flex-direction: column;
-  position: sticky; top: 0; height: 100vh;
+/* eyebrow: the small uppercase label used everywhere instead of card titles */
+.eyebrow {
+  font-size: 10px; font-weight: 620; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--fg-3);
 }
-.brand { display: flex; align-items: center; gap: 11px; padding: 20px 18px 18px; }
-.brand img { width: 32px; height: 32px; image-rendering: pixelated; border-radius: 5px; }
-.brand-text { font-weight: 650; font-size: 15px; letter-spacing: 0.02em; }
-.brand-sub { font-size: 11px; color: var(--dim); letter-spacing: 0; }
 
-.nav { padding: 6px 10px; display: flex; flex-direction: column; gap: 1px; overflow-y: auto; }
-.nav-item {
+/* ============================================================ top shell */
+.rail {
+  position: sticky; top: 0; z-index: 40;
+  display: flex; align-items: center; gap: 22px;
+  height: 58px; padding: 0 22px;
+  background: var(--panel); border-bottom: 1px solid var(--edge);
+}
+.mark { display: flex; align-items: center; gap: 9px; text-decoration: none; color: inherit; }
+.mark img { width: 26px; height: 26px; border-radius: var(--r); image-rendering: pixelated; }
+.mark b { font-size: 14px; font-weight: 650; letter-spacing: -.01em; }
+
+.tabs { display: flex; gap: 2px; flex: 1; min-width: 0; overflow-x: auto; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  position: relative; padding: 8px 13px; border: 0; background: none;
+  color: var(--fg-3); font: 550 13px var(--ui); cursor: pointer; white-space: nowrap;
+  border-radius: var(--r); transition: color .13s ease, background .13s ease;
+}
+.tab:hover { color: var(--fg); background: var(--raised); }
+.tab[aria-current="page"] { color: var(--fg); background: var(--raised); }
+.tab[aria-current="page"]::after {
+  content: ""; position: absolute; left: 13px; right: 13px; bottom: -1px;
+  height: 2px; background: var(--brand); border-radius: 2px 2px 0 0;
+}
+.tab .n { font: 600 10px var(--num); color: var(--fg-3); margin-left: 5px; }
+
+.rail-right { display: flex; align-items: center; gap: 10px; }
+.pulse { display: inline-flex; align-items: center; gap: 7px; padding: 5px 10px;
+  border: 1px solid var(--edge); border-radius: 99px; font-size: 11.5px; color: var(--fg-2); }
+.pulse i { width: 6px; height: 6px; border-radius: 99px; background: var(--fg-3); }
+.pulse.on i { background: var(--brand); animation: beat 2.4s ease-in-out infinite; }
+@keyframes beat { 0%,100% { opacity: 1 } 50% { opacity: .45 } }
+
+.launch {
+  display: inline-flex; align-items: center; gap: 7px; padding: 7px 15px;
+  background: var(--brand); color: var(--brand-dk); border: 0; border-radius: var(--r);
+  font: 620 13px var(--ui); cursor: pointer; transition: filter .14s ease, opacity .14s ease;
+}
+.launch:hover:not(:disabled) { filter: brightness(1.1); }
+.launch:disabled { opacity: .32; cursor: not-allowed; }
+
+.shell { max-width: 1240px; margin: 0 auto; padding: 26px 22px 64px; }
+.head { display: flex; align-items: flex-end; gap: 14px; margin-bottom: 20px; }
+.head .grow { flex: 1; }
+.head p { margin: 5px 0 0; color: var(--fg-2); font-size: 13px; }
+
+/* thin progress bar pinned under the rail */
+.prog { position: sticky; top: 58px; z-index: 39; height: 2px; background: transparent; }
+.prog i { display: block; height: 100%; background: var(--brand); width: 0; transition: width .3s ease; }
+
+.view { display: none; }
+.view.on { display: block; animation: rise .2s ease; }
+@keyframes rise { from { opacity: 0; transform: translateY(5px) } to { opacity: 1; transform: none } }
+
+/* ============================================================ surfaces */
+.ledger {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  background: var(--panel); border: 1px solid var(--edge);
+  border-radius: var(--r-lg); overflow: hidden; margin-bottom: 18px;
+}
+.ledger > div { padding: 15px 17px; border-right: 1px solid var(--edge); }
+.ledger > div:last-child { border-right: 0; }
+.ledger b { display: block; font: 620 24px var(--num); letter-spacing: -.04em; line-height: 1.1; }
+.ledger span { display: block; margin-top: 3px; }
+
+.panel {
+  background: var(--panel); border: 1px solid var(--edge);
+  border-radius: var(--r-lg); overflow: hidden; margin-bottom: 16px;
+}
+.panel > header {
   display: flex; align-items: center; gap: 10px;
-  padding: 8px 10px; border-radius: var(--r-sm);
-  color: var(--text-2); cursor: pointer; border: 0; background: none;
-  font: inherit; text-align: left; width: 100%;
-  transition: background .14s ease, color .14s ease;
+  padding: 12px 16px; border-bottom: 1px solid var(--edge); background: var(--raised);
 }
-.nav-item:hover { background: var(--surface-2); color: var(--text); }
-.nav-item.on { background: var(--accent-soft); color: var(--text); font-weight: 550; }
-.nav-item svg { width: 17px; height: 17px; flex: none; opacity: .85; }
-.nav-item.on svg { opacity: 1; color: var(--accent); }
-.nav-count { margin-left: auto; font: 500 11px var(--mono); color: var(--dim); }
+.panel > header .grow { flex: 1; }
+.panel > .body { padding: 16px; }
 
-.side-foot { margin-top: auto; padding: 12px; border-top: 1px solid var(--line-soft); }
-.play-btn {
-  width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 11px; border-radius: var(--r-md); border: 1px solid var(--line);
-  background: var(--surface-2); color: var(--text); font: 600 14px var(--sans);
-  cursor: pointer; transition: background .15s ease, border-color .15s ease;
-}
-.play-btn:hover:not(:disabled) { background: var(--surface-3); border-color: var(--accent); }
-.play-btn:disabled { opacity: .45; cursor: not-allowed; }
-.side-meta { display: flex; justify-content: space-between; margin-top: 10px; font-size: 11px; color: var(--dim); }
-.side-meta b { color: var(--text-2); font-weight: 550; font-family: var(--mono); }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+.grid4 { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
 
-.main { min-width: 0; display: flex; flex-direction: column; }
-.topbar {
-  position: sticky; top: 0; z-index: 20;
+/* row list: table-like, full width dividers, accent edge when active */
+.rows { display: flex; flex-direction: column; }
+.row {
   display: flex; align-items: center; gap: 14px;
-  padding: 0 26px; height: 60px;
-  background: color-mix(in srgb, var(--bg) 86%, transparent);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--line-soft);
+  padding: 12px 16px; border-bottom: 1px solid var(--edge);
+  position: relative; transition: background .13s ease;
 }
-.topbar .title { font-weight: 600; font-size: 15px; letter-spacing: -0.01em; }
-.topbar .spacer { flex: 1; }
-.chip {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 5px 10px; border-radius: 99px; border: 1px solid var(--line);
-  background: var(--surface); font-size: 12px; color: var(--text-2); cursor: pointer;
-  transition: border-color .15s ease, color .15s ease;
+.row:last-child { border-bottom: 0; }
+.row:hover { background: var(--raised); }
+.row.sel { background: var(--brand-gl); }
+.row.sel::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--brand); }
+.row .ico {
+  width: 34px; height: 34px; flex: none; border-radius: var(--r);
+  background: var(--hover); display: grid; place-items: center; overflow: hidden; color: var(--fg-2);
 }
-.chip:hover { border-color: var(--accent); color: var(--text); }
-.chip .dot { width: 6px; height: 6px; border-radius: 99px; background: var(--dim); }
-.chip.live .dot { background: var(--good); box-shadow: 0 0 0 3px color-mix(in srgb, var(--good) 22%, transparent); }
+.row .ico img { width: 100%; height: 100%; image-rendering: pixelated; }
+.row .nm { font-weight: 570; font-size: 13.5px; }
+.row .sub { font-size: 11.5px; color: var(--fg-3); margin-top: 1px; }
+.row .grow { flex: 1; min-width: 0; }
+.cut { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.page { padding: 24px 26px 40px; display: none; }
-.page.on { display: block; animation: fade .22s ease; }
-@keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-
-/* ---------------------------------------------------------------- pieces */
-.grid { display: grid; gap: 14px; }
-.g2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
-.g3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
-.card {
-  background: var(--surface); border: 1px solid var(--line-soft);
-  border-radius: var(--r-lg); padding: 18px; box-shadow: var(--shadow);
-}
-.card-h { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-.card-h h2 { flex: 1; }
-.muted { color: var(--dim); }
-.small { font-size: 12px; }
-.stat-v { font: 600 26px var(--mono); letter-spacing: -0.03em; }
-.stat-l { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: .07em; margin-top: 2px; }
-
+/* ============================================================ controls */
 .btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-  padding: 8px 13px; border-radius: var(--r-sm); border: 1px solid var(--line);
-  background: var(--surface-2); color: var(--text);
-  font: 550 13px var(--sans); cursor: pointer; white-space: nowrap;
-  transition: background .15s ease, border-color .15s ease, opacity .15s ease;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 7px 13px; border: 1px solid var(--edge-lit); border-radius: var(--r);
+  background: var(--raised); color: var(--fg); font: 550 12.5px var(--ui);
+  cursor: pointer; white-space: nowrap; transition: background .13s ease, border-color .13s ease;
 }
-.btn:hover:not(:disabled) { background: var(--surface-3); border-color: var(--accent); }
-.btn:disabled { opacity: .4; cursor: not-allowed; }
-.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
-.btn.primary:hover:not(:disabled) { filter: brightness(1.08); }
-.btn.ghost { background: transparent; border-color: transparent; color: var(--text-2); }
-.btn.ghost:hover:not(:disabled) { background: var(--surface-2); color: var(--text); }
-.btn.danger:hover:not(:disabled) { border-color: var(--bad); color: var(--bad); }
-.btn.sm { padding: 5px 10px; font-size: 12px; }
-.btn svg { width: 15px; height: 15px; }
-.iconbtn { padding: 6px; }
+.btn:hover:not(:disabled) { background: var(--hover); border-color: var(--fg-3); }
+.btn:disabled { opacity: .38; cursor: not-allowed; }
+.btn.go { background: var(--brand); color: var(--brand-dk); border-color: var(--brand); font-weight: 620; }
+.btn.go:hover:not(:disabled) { filter: brightness(1.1); }
+.btn.flat { background: none; border-color: transparent; color: var(--fg-2); }
+.btn.flat:hover:not(:disabled) { background: var(--raised); color: var(--fg); }
+.btn.hurt:hover:not(:disabled) { border-color: var(--stop); color: var(--stop); }
+.btn.tiny { padding: 4px 9px; font-size: 11.5px; }
+.btn svg { width: 14px; height: 14px; flex: none; }
+.btn.icon { padding: 5px; }
 
-.input, .select, textarea.input {
-  width: 100%; padding: 9px 11px; border-radius: var(--r-sm);
-  border: 1px solid var(--line); background: var(--surface-2); color: var(--text);
-  font: 400 13px var(--sans); transition: border-color .15s ease;
+input[type=text], input[type=password], input[type=number], select, textarea {
+  width: 100%; padding: 8px 11px; border-radius: var(--r);
+  border: 1px solid var(--edge-lit); background: var(--ink); color: var(--fg);
+  font: 400 13px var(--ui); transition: border-color .13s ease;
 }
-.input:focus, .select:focus { outline: none; border-color: var(--accent); }
-.input::placeholder { color: var(--dim); }
-.field { display: flex; flex-direction: column; gap: 6px; }
-.field > label { font-size: 12px; color: var(--text-2); font-weight: 500; }
-.hint { font-size: 11.5px; color: var(--dim); }
+:root[data-mode="day"] input, :root[data-mode="day"] select, :root[data-mode="day"] textarea { background: var(--raised); }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--brand); }
+label.fl { display: block; margin-bottom: 5px; }
 
-.row { display: flex; align-items: center; gap: 8px; }
-.row.wrap { flex-wrap: wrap; }
-.empty {
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
-  padding: 46px 20px; color: var(--dim); text-align: center;
-}
-.empty svg { width: 30px; height: 30px; opacity: .4; }
-
-.seg { display: inline-flex; padding: 3px; gap: 2px; background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--r-sm); }
+.seg { display: inline-flex; border: 1px solid var(--edge-lit); border-radius: var(--r); overflow: hidden; }
 .seg button {
-  padding: 6px 13px; border: 0; background: none; color: var(--text-2);
-  font: 550 12.5px var(--sans); border-radius: 5px; cursor: pointer; transition: background .14s ease, color .14s ease;
+  padding: 6px 13px; border: 0; border-right: 1px solid var(--edge-lit);
+  background: var(--raised); color: var(--fg-2); font: 550 12.5px var(--ui); cursor: pointer;
+  transition: background .13s ease, color .13s ease;
 }
-.seg button:hover { color: var(--text); }
-.seg button.on { background: var(--surface); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,.25); }
+.seg button:last-child { border-right: 0; }
+.seg button:hover { color: var(--fg); background: var(--hover); }
+.seg button.on { background: var(--brand); color: var(--brand-dk); font-weight: 620; }
 
-.pill { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 550; border: 1px solid var(--line); color: var(--text-2); }
-.pill.ok { color: var(--good); border-color: color-mix(in srgb, var(--good) 35%, transparent); }
-.pill.acc { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 35%, transparent); }
-
-.inst {
-  display: flex; align-items: center; gap: 13px; padding: 13px;
-  background: var(--surface); border: 1px solid var(--line-soft);
-  border-radius: var(--r-lg); transition: border-color .15s ease, background .15s ease;
+.tag {
+  display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px;
+  border-radius: var(--r); font: 600 10.5px var(--ui); letter-spacing: .03em;
+  background: var(--hover); color: var(--fg-2); text-transform: uppercase;
 }
-.inst:hover { border-color: var(--line); }
-.inst.on { border-color: var(--accent); background: var(--accent-soft); }
-.inst .ico { width: 40px; height: 40px; border-radius: 9px; background: var(--surface-3); display: grid; place-items: center; flex: none; overflow: hidden; }
-.inst .ico img { width: 100%; height: 100%; image-rendering: pixelated; }
-.inst .ico svg { width: 19px; height: 19px; color: var(--dim); }
-.inst .nm { font-weight: 600; font-size: 14px; }
-.inst .meta { font-size: 11.5px; color: var(--dim); }
-.inst .grow { flex: 1; min-width: 0; }
-.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tag.live { background: var(--brand-gl); color: var(--brand); }
+.tag.warn { background: color-mix(in srgb, var(--warn) 16%, transparent); color: var(--warn); }
+.tag.off { background: color-mix(in srgb, var(--stop) 14%, transparent); color: var(--stop); }
 
-.bar { height: 4px; border-radius: 99px; background: var(--surface-3); overflow: hidden; }
-.bar > i { display: block; height: 100%; background: var(--accent); transition: width .3s ease; }
+.stack { display: flex; flex-direction: column; gap: 13px; }
+.inline { display: flex; align-items: center; gap: 8px; }
+.inline.wrap { flex-wrap: wrap; }
+.grow { flex: 1; min-width: 0; }
+.muted { color: var(--fg-2); }
+.faint { color: var(--fg-3); }
+.tiny { font-size: 11.5px; }
 
-.modal-root { position: fixed; inset: 0; z-index: 100; display: none; }
-.modal-root.on { display: grid; place-items: center; padding: 24px; }
-.modal-bg { position: absolute; inset: 0; background: rgba(0,0,0,.62); backdrop-filter: blur(3px); animation: fade .18s ease; }
-.modal {
-  position: relative; width: min(560px, 100%); max-height: 86vh; overflow-y: auto;
-  background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
-  box-shadow: 0 24px 64px -18px rgba(0,0,0,.75); animation: pop .2s cubic-bezier(.2,.9,.3,1);
+.empty { padding: 44px 20px; text-align: center; color: var(--fg-3); }
+.empty svg { width: 26px; height: 26px; margin-bottom: 10px; opacity: .5; }
+.empty b { display: block; color: var(--fg-2); font-weight: 570; margin-bottom: 4px; }
+
+.code {
+  background: var(--ink); border: 1px solid var(--edge); border-radius: var(--r);
+  padding: 12px 13px; font: 12px/1.65 var(--num); color: var(--fg-2);
+  height: 330px; overflow: auto; white-space: pre-wrap; word-break: break-word;
 }
-@keyframes pop { from { opacity: 0; transform: scale(.97) translateY(6px); } to { opacity: 1; transform: none; } }
-.modal-h { padding: 18px 20px 0; }
-.modal-b { padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; }
-.modal-f { padding: 0 20px 18px; display: flex; gap: 9px; justify-content: flex-end; }
-.modal h2 { font-size: 17px; }
-.err { color: var(--bad); font-size: 12.5px; min-height: 0; }
-.err:empty { display: none; }
+:root[data-mode="day"] .code { background: #fbfbfc; }
+.code .s { color: var(--fg-3); }
 
-.toasts { position: fixed; right: 20px; bottom: 20px; z-index: 200; display: flex; flex-direction: column; gap: 8px; max-width: 360px; }
+/* ============================================================ overlays */
+.scrim {
+  position: fixed; inset: 0; z-index: 100; display: none;
+  background: rgba(4,5,7,.72); backdrop-filter: blur(2px);
+  grid-template-rows: 1fr auto; justify-items: center; padding: 5vh 18px;
+}
+.scrim.on { display: grid; }
+.sheet {
+  grid-row: 2; width: min(620px, 100%); max-height: 84vh; overflow-y: auto;
+  background: var(--panel); border: 1px solid var(--edge-lit); border-radius: 10px;
+  box-shadow: 0 30px 70px -24px rgba(0,0,0,.8);
+  animation: drop .2s cubic-bezier(.2,.9,.3,1);
+}
+@keyframes drop { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: none } }
+.sheet > h2 { padding: 15px 18px 0; font-size: 16px; }
+.sheet > .in { padding: 15px 18px; display: flex; flex-direction: column; gap: 13px; }
+.sheet > .foot { padding: 0 18px 16px; display: flex; gap: 8px; justify-content: flex-end; }
+.bad { color: var(--stop); font-size: 12px; }
+.bad:empty { display: none; }
+
+.toasts { position: fixed; right: 18px; bottom: 18px; z-index: 200;
+  display: flex; flex-direction: column; gap: 7px; max-width: 350px; }
 .toast {
-  padding: 11px 14px; border-radius: var(--r-md); border: 1px solid var(--line);
-  background: var(--surface-2); box-shadow: var(--shadow); font-size: 13px;
-  animation: slide .2s cubic-bezier(.2,.9,.3,1);
+  padding: 10px 13px; border-radius: var(--r); border: 1px solid var(--edge-lit);
+  background: var(--panel); box-shadow: 0 12px 30px -12px rgba(0,0,0,.7); font-size: 12.5px;
+  animation: slide .18s ease;
 }
-@keyframes slide { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
-.toast.err { border-color: var(--bad); color: var(--bad); }
-.toast.ok { border-color: color-mix(in srgb, var(--good) 40%, transparent); }
+@keyframes slide { from { opacity: 0; transform: translateX(12px) } to { opacity: 1; transform: none } }
+.toast.bad { border-color: var(--stop); color: var(--stop); }
+.toast.good { border-color: var(--brand); }
 
-.log { background: #0c0e11; border: 1px solid var(--line-soft); border-radius: var(--r-md); padding: 12px; font: 12px/1.6 var(--mono); color: #b9c2cc; height: 320px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; }
-.log .sys { color: var(--dim); }
-.log .err { color: var(--bad); }
-
-.hero { position: relative; overflow: hidden; border-radius: var(--r-lg); border: 1px solid var(--line-soft); margin-bottom: 16px; }
-.hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .2; filter: saturate(.5); }
-.hero-in { position: relative; padding: 26px; background: linear-gradient(90deg, var(--surface) 30%, transparent); }
-
-table.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
-table.tbl th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); font-weight: 550; padding: 8px 10px; border-bottom: 1px solid var(--line-soft); }
-table.tbl td { padding: 9px 10px; border-bottom: 1px solid var(--line-soft); }
-
-.cube { border-radius: 8px; image-rendering: pixelated; }
-
-@media (max-width: 900px) {
-  .app { grid-template-columns: 1fr; }
-  .side { position: static; height: auto; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 8px; padding-right: 10px; }
-  .nav { flex-direction: row; overflow-x: auto; padding: 0; flex: 1; }
-  .side-foot { margin: 0; border: 0; padding: 0 10px; width: 100%; }
-  .play-btn { width: auto; padding: 8px 16px; }
+@media (max-width: 820px) {
+  .rail { flex-wrap: wrap; height: auto; padding: 10px 14px; gap: 10px; }
+  .tabs { order: 3; width: 100%; }
+  .shell { padding: 18px 14px 48px; }
+  .ledger > div { border-right: 0; border-bottom: 1px solid var(--edge); }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
@@ -267,1078 +276,1011 @@ table.tbl td { padding: 9px 10px; border-bottom: 1px solid var(--line-soft); }
 </head>
 <body>
 
-<div class="app">
-  <aside class="side">
-    <div class="brand">
-      <img src="/logo.png" alt="">
-      <div>
-        <div class="brand-text">LodeStone</div>
-        <div class="brand-sub">Minecraft launcher</div>
-      </div>
-    </div>
-    <nav class="nav" id="nav"></nav>
-    <div class="side-foot">
-      <button class="play-btn" id="btn-play">
-        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M8 5.14v13.72a1 1 0 0 0 1.54.84l10.1-6.86a1 1 0 0 0 0-1.68L9.54 4.3A1 1 0 0 0 8 5.14z"/></svg>
-        <span id="play-label">Play</span>
-      </button>
-      <div class="side-meta"><span id="meta-running">0 running</span><span id="meta-time">0m</span></div>
-    </div>
-  </aside>
+<header class="rail">
+  <a class="mark" href="#" onclick="go('home');return false"><img src="/logo.png" alt=""><b>LodeStone</b></a>
+  <nav class="tabs" id="tabs"></nav>
+  <div class="rail-right">
+    <span class="pulse" id="pulse"><i></i><span>Ready</span></span>
+    <button class="launch" id="go-play"><svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M8 5.14v13.72a1 1 0 0 0 1.54.84l10.1-6.86a1 1 0 0 0 0-1.68L9.54 4.3A1 1 0 0 0 8 5.14z"/></svg>Play</button>
+  </div>
+</header>
+<div class="prog"><i id="prog-bar"></i></div>
 
-  <main class="main">
-    <header class="topbar">
-      <span class="title" id="crumb">Home</span>
-      <span class="spacer"></span>
-      <span id="topbar-slot" class="row"></span>
-      <button class="chip" id="chip-status"><i class="dot"></i><span>Ready</span></button>
-    </header>
-    <div id="pages"></div>
-  </main>
+<div class="shell">
+  <div class="head"><h1 id="title">Home</h1><span class="grow"></span><span id="head-slot" class="inline"></span></div>
+  <div id="views"></div>
 </div>
 
-<div class="modal-root" id="modal-root"><div class="modal-bg" data-close></div><div class="modal" id="modal"></div></div>
+<div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
 <div class="toasts" id="toasts"></div>
 
 <script>
 "use strict";
 
-/* ============================================================ transport */
-const TOKEN = decodeURIComponent(location.hash.replace(/^#/, ""));
-async function callApi(method, ...args) {
+/* ==================================================== transport */
+const AUTH = decodeURIComponent(location.hash.replace(/^#/, ""));
+async function api(method, ...args) {
   try {
-    const res = await fetch("/rpc", {
+    const r = await fetch("/rpc", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-Lodestone-Token": TOKEN },
+      headers: { "Content-Type": "application/json", "X-Lodestone-Token": AUTH },
       body: JSON.stringify({ method, args }),
     });
-    return await res.json();
-  } catch (err) {
-    console.error(method, err);
+    return await r.json();
+  } catch (e) {
+    console.error(method, e);
     return { success: false, error: "Lost contact with the launcher." };
   }
 }
-function connectEvents() {
-  const src = new EventSource("/events?token=" + encodeURIComponent(TOKEN));
-  src.onmessage = (ev) => {
-    const msg = JSON.parse(ev.data);
-    window.__lodestoneEvent && window.__lodestoneEvent(msg.name, msg.data);
+function listen() {
+  const s = new EventSource("/events?token=" + encodeURIComponent(AUTH));
+  s.onmessage = (ev) => {
+    const m = JSON.parse(ev.data);
+    window.__lodestoneEvent && window.__lodestoneEvent(m.name, m.data);
   };
 }
 
-/* ============================================================ helpers */
+/* ==================================================== kit */
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const ICONS = {
+const cut = (s, n = 150) => (s && s.length > n ? s.slice(0, n) + "..." : (s || ""));
+
+const I = {
   home: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/>',
-  box: '<path d="M3.5 7.5 12 3l8.5 4.5v9L12 21l-8.5-4.5z"/><path d="M3.5 7.5 12 12l8.5-4.5M12 12v9"/>',
+  box: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>',
   cube: '<path d="M12 2.5 21 7v10l-9 4.5L3 17V7z"/><path d="M3 7l9 4.5L21 7M12 11.5V21.5"/>',
   layers: '<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>',
   shirt: '<path d="M8 3 4 5.5 5.5 9 8 8v11h8V8l2.5 1L20 5.5 16 3a4 4 0 0 1-8 0z"/>',
-  server: '<rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/>',
+  server: '<rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="13" width="18" height="7" rx="1.5"/><path d="M7 7.5h.01M7 16.5h.01"/>',
   import: '<path d="M12 3v11"/><path d="m8 10 4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>',
   user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
-  gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/>',
+  cog: '<circle cx="12" cy="12" r="3"/><path d="M4 12h2M18 12h2M12 4v2M12 18v2M6.3 6.3l1.4 1.4M16.3 16.3l1.4 1.4M17.7 6.3l-1.4 1.4M7.7 16.3l-1.4 1.4"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
   play: '<path d="M8 5.14v13.72a1 1 0 0 0 1.54.84l10.1-6.86a1 1 0 0 0 0-1.68L9.54 4.3A1 1 0 0 0 8 5.14z"/>',
-  trash: '<path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/>',
+  stop: '<rect x="6" y="6" width="12" height="12" rx="1.5"/>',
+  restart: '<path d="M20 11a8 8 0 1 0-1.5 6"/><path d="M20 5v6h-6"/>',
+  trash: '<path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 13h10l1-13"/>',
   folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
-  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
-  refresh: '<path d="M20 11a8 8 0 1 0-1.5 6"/><path d="M20 5v6h-6"/>',
-  check: '<path d="m5 13 4 4L19 7"/>',
-  alert: '<path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/>',
-  download: '<path d="M12 4v11"/><path d="m8 11 4 4 4-4"/><path d="M4 19h16"/>',
+  find: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  down: '<path d="M12 4v11"/><path d="m8 11 4 4 4-4"/><path d="M4 19h16"/>',
+  ok: '<path d="m5 13 4 4L19 7"/>',
+  warn: '<path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/>',
   x: '<path d="M6 6l12 12M18 6 6 18"/>',
-  edit: '<path d="M4 20h4L20 8l-4-4L4 16z"/>',
-  stop: '<rect x="6" y="6" width="12" height="12" rx="2"/>',
   send: '<path d="M4 12 20 4l-6 16-2-6z"/>',
   cam: '<path d="M3 8h4l2-2h6l2 2h4v11H3z"/><circle cx="12" cy="13" r="3.5"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/>',
 };
-const icon = (n, s = 17) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" width="${s}" height="${s}" aria-hidden="true">${ICONS[n] || ""}</svg>`;
-const fmtBytes = (n) => {
+const ic = (n, s = 16) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="${s}" height="${s}" aria-hidden="true">${I[n] || ""}</svg>`;
+
+const bytes = (n) => {
   n = Number(n) || 0;
   if (n >= 1073741824) return (n / 1073741824).toFixed(1) + " GB";
   if (n >= 1048576) return (n / 1048576).toFixed(1) + " MB";
   if (n >= 1024) return Math.round(n / 1024) + " KB";
   return n + " B";
 };
-const fmtTime = (sec) => {
-  sec = Math.max(0, Math.floor(sec || 0));
-  const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60);
+const dur = (s) => {
+  s = Math.max(0, Math.floor(s || 0));
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
   return h ? (m ? `${h}h ${m}m` : `${h}h`) : `${m}m`;
 };
-function toast(msg, kind = "", ms = 4200) {
+function say(msg, kind = "", ms = 4200) {
   const el = document.createElement("div");
   el.className = "toast" + (kind ? " " + kind : "");
   el.textContent = msg;
   $("#toasts").appendChild(el);
-  setTimeout(() => { el.style.opacity = "0"; setTimeout(() => el.remove(), 200); }, ms);
+  setTimeout(() => { el.style.opacity = "0"; setTimeout(() => el.remove(), 180); }, ms);
 }
 
-/* ============================================================ state */
-let STATE = { accounts: [], instances: [], servers: [], running: [], sessions: {},
-  installing: [], playtime_total: 0, active_account: null, active_instance: null,
+/* ==================================================== state */
+let S = { accounts: [], instances: [], running: [], sessions: {}, installing: [],
+  playtime_total: 0, active_account: null, active_instance: null,
   settings: { memory_mb: 2048 }, java_ok: false, java_version: null, version: null };
-let PROGRESS = null;
-const DISK = { instances: {}, servers: {} };
-const SRV = { list: [], sel: null, log: "", pinfo: null };
-const SK = { catalog: null, saved: [], local: null, target: null };
-const NEW = { loader: "vanilla", version: null, loaderVersion: null };
-let ROUTE = "home";
+let BUSY = null;
+const SIZE = { instances: {}, servers: {} };
+const SRV = { list: [], loaded: false, loading: false, sel: null };
+const SK = { cat: null, lib: [], me: null };
+const DRAFT = { loader: "vanilla", version: null, loaderVersion: null };
+const ADDON = { q: "", kind: "mod", hits: [], loading: false };
+let WHERE = "home";
 
-const PAGES = [
-  { id: "home", label: "Home", icon: "home" },
-  { id: "instances", label: "Instances", icon: "box", count: () => STATE.instances.length },
-  { id: "addons", label: "Addons", icon: "layers" },
-  { id: "skins", label: "Skins", icon: "shirt" },
-  { id: "servers", label: "Servers", icon: "server", count: () => SRV.list.length },
-  { id: "import", label: "Import", icon: "import" },
-  { id: "accounts", label: "Accounts", icon: "user", count: () => STATE.accounts.length },
-  { id: "settings", label: "Settings", icon: "gear" },
+const TABS = [
+  { id: "home", label: "Home", i: "home" },
+  { id: "instances", label: "Instances", i: "box", n: () => S.instances.length },
+  { id: "addons", label: "Addons", i: "layers" },
+  { id: "skins", label: "Skins", i: "shirt" },
+  { id: "servers", label: "Servers", i: "server", n: () => SRV.list.length },
+  { id: "import", label: "Import", i: "import" },
+  { id: "accounts", label: "Accounts", i: "user", n: () => S.accounts.length },
+  { id: "settings", label: "Settings", i: "cog" },
 ];
 
-function renderNav() {
-  $("#nav").innerHTML = PAGES.map((p) => {
-    const n = p.count ? p.count() : 0;
-    return `<button class="nav-item${ROUTE === p.id ? " on" : ""}" data-go="${p.id}">
-      ${icon(p.icon)}<span>${p.label}</span>${n ? `<span class="nav-count">${n}</span>` : ""}</button>`;
-  }).join("");
-  $("#crumb").textContent = (PAGES.find((p) => p.id === ROUTE) || PAGES[0]).label;
+// Rebuilding these on every state push destroyed the nodes under the user's
+// cursor and reset any open input. Both are updated in place instead, and only
+// when their content actually differs.
+let tabSig = "";
+function tabs() {
+  const sig = TABS.map((t) => t.id + (t.n ? ":" + t.n() : "")).join("|") + "|" + WHERE;
+  if (sig !== tabSig) {
+    tabSig = sig;
+    $("#tabs").innerHTML = TABS.map((t) => {
+      const n = t.n ? t.n() : 0;
+      return `<button class="tab" data-t="${t.id}"${WHERE === t.id ? ' aria-current="page"' : ""}>${t.label}${n ? `<span class="n">${n}</span>` : ""}</button>`;
+    }).join("");
+  }
+  const cur = TABS.find((t) => t.id === WHERE) || TABS[0];
+  if ($("#title").textContent !== cur.label) $("#title").textContent = cur.label;
 }
 
+const VIEWS = {};
 function go(id) {
-  ROUTE = id;
-  renderNav();
-  renderPage();
-  const el = document.querySelector(`[data-go="${id}"]`);
-  if (el) el.setAttribute("aria-current", "page");
+  WHERE = id;
+  tabs();
+  $("#views").innerHTML = VIEWS[id] ? VIEWS[id]() : "";
+  const v = $("#views").firstElementChild;
+  if (v) v.classList.add("on");
+  if (VIEWS[id] && VIEWS[id].ready) VIEWS[id].ready();
+  // Seed the signature with the state we just rendered. Blanking it here made
+  // repaint() see a mismatch, remount the view, and call ready() again -- an
+  // endless loop that also restarted the fade-in on every pass, so the view
+  // never rose above opacity 0.
+  viewSig = viewSignature();
 }
 
-function renderPage() {
-  const pages = $("#pages");
-  const keep = pages.querySelector(".page.on");
-  if (keep) keep.classList.remove("on");
-  const fn = { home: pageHome, instances: pageInstances, addons: pageAddons, skins: pageSkins,
-    servers: pageServers, import: pageImport, accounts: pageAccounts, settings: pageSettings }[ROUTE];
-  pages.innerHTML = fn ? fn() : "";
-  const el = pages.querySelector(".page");
-  if (el) el.classList.add("on");
-  if (fn && fn.after) fn.after();
+// Only redraw the active view when something it renders has really changed.
+// The 5s poll must not wipe a search box the user is typing into.
+function viewSignature() {
+  return [
+    S.instances.map((i) => i.name + i.playtime).join(","),
+    S.running.join(","), S.installing.join(","),
+    S.accounts.map((a) => a.name).join(","),
+    (S.active_account || {}).uuid || "", S.active_instance || "",
+    JSON.stringify(SIZE.instances), SRV.list.map((x) => x.name).join(","),
+    JSON.stringify(SIZE.servers),
+  ].join("|");
+}
+let viewSig = "";
+function repaint() {
+  const p = $("#pulse");
+  const busy = S.running.length > 0;
+  p.classList.toggle("on", busy);
+  p.querySelector("span").textContent = S.java_ok ? (busy ? "Running" : "Ready") : "No Java";
+  const inst = S.instances.find((i) => i.name === S.active_instance);
+  const play = $("#go-play");
+  play.disabled = !inst || busy || !S.active_account;
+  play.lastChild.textContent = inst ? " Play " + inst.name : "Play";
+  const bar = $("#prog-bar");
+  if (BUSY) {
+    bar.style.width = (BUSY.percent || 0) + "%";
+    bar.parentElement.style.background = "var(--edge)";
+  } else {
+    bar.style.width = "0";
+    bar.parentElement.style.background = "transparent";
+  }
+  tabs();
+  const sig = viewSignature();
+  if ($("#views").firstElementChild && sig !== viewSig) go(WHERE);
 }
 
-function renderShell() {
-  const running = STATE.running.length;
-  $("#meta-running").textContent = running + " running";
-  $("#meta-time").textContent = fmtTime(STATE.playtime_total);
-  const inst = STATE.instances.find((i) => i.name === STATE.active_instance);
-  const btn = $("#btn-play");
-  btn.disabled = !inst || running > 0 || !STATE.active_account;
-  $("#play-label").textContent = inst ? "Play " + inst.name : "Play";
-  const chip = $("#chip-status");
-  chip.classList.toggle("live", running > 0);
-  chip.querySelector("span").textContent = STATE.java_ok ? (running ? "Running" : "Ready") : "No Java";
-  renderNav();
-  if ($("#pages").querySelector(".page")) renderPage();
-}
-
-/* ============================================================ home */
-function pageHome() {
-  const inst = STATE.instances.find((i) => i.name === STATE.active_instance);
-  const total = STATE.playtime_total;
-  const mods = STATE.instances.reduce((a, i) => a + (DISK.instances[i.name] ? 1 : 0), 0);
-  return `<section class="page">
-    <div class="hero"><img src="/background.png" alt=""><div class="hero-in">
-      <h1>${inst ? esc(inst.name) : "No instance yet"}</h1>
-      <p class="muted" style="margin:4px 0 14px">${inst
-        ? `${esc(inst.version)} · ${esc(String(inst.loader || "vanilla").replace(/^./, (c) => c.toUpperCase()))}${inst.loader_version ? " " + esc(inst.loader_version) : ""}`
-        : "Create an instance to start playing."}</p>
-      <div class="row">
-        <button class="btn primary" onclick="playActive()" ${inst && STATE.active_account ? "" : "disabled"}>${icon("play",15)} Play</button>
-        <button class="btn" onclick="openCreate()">${icon("plus",15)} New instance</button>
-      </div>
-    </div></div>
-
-    <div class="grid g3" style="margin-bottom:14px">
-      <div class="card"><div class="stat-v">${fmtTime(total)}</div><div class="stat-l">Time played</div></div>
-      <div class="card"><div class="stat-v">${STATE.instances.length}</div><div class="stat-l">Instances</div></div>
-      <div class="card"><div class="stat-v">${SRV.list.length}</div><div class="stat-l">Servers</div></div>
+/* ==================================================== home */
+VIEWS.home = () => {
+  const i = S.instances.find((x) => x.name === S.active_instance);
+  const disk = Object.values(SIZE.instances).reduce((a, b) => a + b, 0);
+  const live = S.running.map((n) => `<div class="row"><span class="tag live">running</span><span class="grow cut">${esc(n)}</span></div>`).join("");
+  const busy = S.installing.map((n) => `<div class="row"><span class="tag warn">working</span><span class="grow cut">${esc(n)}</span></div>`).join("");
+  return `<section class="view">
+    <div class="ledger">
+      <div><b>${dur(S.playtime_total)}</b><span class="eyebrow">Played</span></div>
+      <div><b>${S.instances.length}</b><span class="eyebrow">Instances</span></div>
+      <div><b>${SRV.list.length}</b><span class="eyebrow">Servers</span></div>
+      <div><b>${bytes(disk)}</b><span class="eyebrow">On disk</span></div>
     </div>
-
-    <div class="grid g2">
-      <div class="card"><div class="card-h"><h2>Activity</h2></div>${activityHtml()}</div>
-      <div class="card"><div class="card-h"><h2>Runtime</h2></div>
-        <div class="row" style="justify-content:space-between;padding:6px 0"><span class="muted small">Java</span><b class="small">${esc(STATE.java_version || "not detected")}</b></div>
-        <div class="row" style="justify-content:space-between;padding:6px 0"><span class="muted small">Memory</span><b class="small">${STATE.settings.memory_mb} MB</b></div>
-        <div class="row" style="justify-content:space-between;padding:6px 0"><span class="muted small">Account</span><b class="small">${esc(STATE.active_account ? STATE.active_account.name : "none")}</b></div>
-        <div class="row" style="justify-content:space-between;padding:6px 0"><span class="muted small">Version</span><b class="small">${esc(STATE.version || "-")}</b></div>
+    <div class="grid2">
+      <div class="panel">
+        <header><span class="eyebrow grow">Current instance</span></header>
+        <div class="body">
+          ${i ? `<div class="nm" style="font-size:16px">${esc(i.name)}</div>
+            <div class="faint tiny" style="margin-top:3px">${esc(i.version)} · ${esc(i.loader)}${i.loader_version ? " " + esc(i.loader_version) : ""}</div>`
+           : `<div class="faint tiny">Nothing selected. Create an instance to get started.</div>`}
+          <div class="inline" style="margin-top:14px">
+            <button class="btn go" onclick="play()">${ic("play",14)} Play</button>
+            <button class="btn" onclick="create()">${ic("plus",14)} New</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <header><span class="eyebrow grow">Activity</span></header>
+        <div class="rows">${live || busy || `<div class="row faint tiny">Idle.</div>`}</div>
+      </div>
+    </div>
+    <div class="panel">
+      <header><span class="eyebrow grow">Environment</span></header>
+      <div class="rows">
+        <div class="row"><span class="grow tiny muted">Java</span><span class="tag">${esc(S.java_version || "not detected")}</span></div>
+        <div class="row"><span class="grow tiny muted">Memory</span><span class="tag">${S.settings.memory_mb} MB</span></div>
+        <div class="row"><span class="grow tiny muted">Account</span><span class="tag">${esc(S.active_account ? S.active_account.name : "none")}</span></div>
+        <div class="row"><span class="grow tiny muted">Version</span><span class="tag">${esc(S.version || "-")}</span></div>
       </div>
     </div>
   </section>`;
-}
-function activityHtml() {
-  const rows = [];
-  for (const n of STATE.running) rows.push(`<div class="row" style="padding:6px 0"><span class="pill ok">running</span><span class="small">${esc(n)}</span></div>`);
-  for (const n of STATE.installing) rows.push(`<div class="row" style="padding:6px 0"><span class="pill acc">working</span><span class="small">${esc(n)}</span></div>`);
-  if (!rows.length) rows.push(`<div class="muted small" style="padding:6px 0">Nothing running right now.</div>`);
-  return rows.join("");
-}
-pageHome.after = async () => {
-  const r = await callApi("get_disk_usage", "instances");
-  if (r.success) { DISK.instances = r.sizes; }
+};
+VIEWS.home.ready = async () => {
+  const d = await api("get_disk_usage", "instances");
+  if (d.success) { SIZE.instances = d.sizes; repaint(); }
 };
 
-/* ============================================================ instances */
-function loaderIcon(l) { return l === "fabric" ? "cube" : l === "forge" ? "layers" : "box"; }
-function instRow(i) {
-  const running = STATE.running.includes(i.name);
-  const working = STATE.installing.includes(i.name);
-  return `<div class="inst${i.name === STATE.active_instance ? " on" : ""}">
-    <div class="ico">${icon(loaderIcon(i.loader), 19)}</div>
-    <div class="grow">
-      <div class="nm truncate">${esc(i.name)} ${running ? '<span class="pill ok">running</span>' : ""}${working ? '<span class="pill acc">installing</span>' : ""}</div>
-      <div class="meta">${esc(i.version)} · ${esc(String(i.loader || "vanilla"))} · ${fmtTime(i.playtime)}${DISK.instances[i.name] ? " · " + fmtBytes(DISK.instances[i.name]) : ""}</div>
-    </div>
-    <div class="row">
-      ${i.name === STATE.active_instance ? "" : `<button class="btn sm ghost" onclick="setActive('${esc(i.name)}')">Use</button>`}
-      <button class="btn sm" onclick="instActions('${esc(i.name)}')">${icon("gear",14)}</button>
-    </div>
-  </div>`;
-}
-function pageInstances() {
-  const list = STATE.instances.length
-    ? `<div class="grid">${STATE.instances.map(instRow).join("")}</div>`
-    : `<div class="card empty">${icon("box",30)}<div>No instances yet.</div>
-       <button class="btn primary" onclick="openCreate()">${icon("plus",15)} Create one</button></div>`;
-  return `<section class="page">
-    <div class="row" style="margin-bottom:14px">
-      <span class="muted small">${STATE.instances.length} instance${STATE.instances.length === 1 ? "" : "s"}</span>
-      <span style="flex:1"></span>
-      <button class="btn primary" onclick="openCreate()">${icon("plus",15)} New instance</button>
+/* ==================================================== instances */
+const glyph = (l) => (l === "fabric" ? "cube" : l === "forge" ? "layers" : "box");
+VIEWS.instances = () => {
+  const list = S.instances.length
+    ? `<div class="panel"><div class="rows">${S.instances.map((i) => `
+        <div class="row${i.name === S.active_instance ? " sel" : ""}">
+          <div class="ico">${ic(glyph(i.loader),17)}</div>
+          <div class="grow">
+            <div class="nm cut">${esc(i.name)} ${S.running.includes(i.name) ? '<span class="tag live">running</span>' : ""}${S.installing.includes(i.name) ? '<span class="tag warn">busy</span>' : ""}</div>
+            <div class="sub">${esc(i.version)} · ${esc(i.loader)} · ${dur(i.playtime)}${SIZE.instances[i.name] ? " · " + bytes(SIZE.instances[i.name]) : ""}</div>
+          </div>
+          ${i.name === S.active_instance ? "" : `<button class="btn tiny" onclick="use('${esc(i.name)}')">Use</button>`}
+          <button class="btn tiny icon" onclick="instMenu('${esc(i.name)}')">${ic("cog",14)}</button>
+        </div>`).join("")}</div></div>`
+    : `<div class="panel"><div class="empty">${ic("box",26)}<b>No instances</b>
+        <div class="tiny">Create one to start playing.</div>
+        <div style="margin-top:14px"><button class="btn go" onclick="create()">${ic("plus",14)} Create instance</button></div></div></div>`;
+  return `<section class="view">
+    <div class="inline" style="margin-bottom:14px">
+      <span class="tiny faint">${S.instances.length} total</span>
+      <span class="grow"></span>
+      <button class="btn go" onclick="create()">${ic("plus",14)} New instance</button>
     </div>${list}</section>`;
-}
+};
 
-async function playActive() {
-  const inst = STATE.instances.find((i) => i.name === STATE.active_instance);
-  if (!inst) return;
-  const r = await callApi("launch", inst.name);
-  if (!r.success) toast(r.error || "Couldn't launch.", "err");
-  else if (r.installing) toast("Preparing " + inst.name + " — this downloads Minecraft the first time.");
-}
-async function setActive(name) {
-  const r = await callApi("set_active_instance", name);
-  if (!r.success) toast(r.error || "Couldn't switch.", "err");
-}
-async function instActions(name) {
-  const i = STATE.instances.find((x) => x.name === name);
+async function play() {
+  const i = S.instances.find((x) => x.name === S.active_instance);
   if (!i) return;
-  const body = `
-    <div class="field"><label>Name</label><input class="input" id="i-name" value="${esc(name)}" maxlength="40"></div>
-    <div class="field"><label>Icon</label>
-      <div class="seg" id="i-icon">${["box","cube","layers","home","user","server","search","gem","zap"]
-        .map((k) => `<button data-v="${k}" class="${(i.icon || loaderIcon(i.loader)) === k ? "on" : ""}">${k}</button>`).join("")}</div></div>
-    <div class="grid g2">
-      <button class="btn" onclick="openFolder('${esc(name)}')">${icon("folder",15)} Open folder</button>
-      <button class="btn" onclick="openShots('${esc(name)}')">${icon("cam",15)} Screenshots</button>
-      <button class="btn" onclick="openContent('${esc(name)}')">${icon("layers",15)} Mods & packs</button>
-      <button class="btn danger" onclick="delInstance('${esc(name)}')">${icon("trash",15)} Delete</button>
-    </div>`;
-  openModal(name, body, async () => {
-    const ic = $("#i-icon .on")?.dataset.v;
-    const r = await callApi("rename_instance", name, $("#i-name").value.trim());
-    if (!r.success) { toast(r.error || "Rename failed.", "err"); return false; }
-    if (ic) await callApi("set_instance_icon", name, ic);
-    toast("Saved.", "ok");
+  const r = await api("launch", i.name);
+  if (!r.success) say(r.error || "Couldn't launch.", "bad");
+  else if (r.installing) say("Downloading " + i.name + " for the first time...");
+}
+async function use(n) {
+  const r = await api("set_active_instance", n);
+  if (!r.success) say(r.error || "Couldn't switch.", "bad");
+}
+function instMenu(n) {
+  const i = S.instances.find((x) => x.name === n);
+  const icons = ["box", "cube", "layers", "home", "user", "server", "find"];
+  open("Instance", `
+    <div><label class="fl eyebrow" for="im-n">Name</label><input type="text" id="im-n" value="${esc(n)}" maxlength="40"></div>
+    <div><label class="fl eyebrow">Icon</label><div class="seg" id="im-i">
+      ${icons.map((k) => `<button data-v="${k}" class="${(i.icon || glyph(i.loader)) === k ? "on" : ""}">${ic(k,15)}</button>`).join("")}</div></div>
+    <div class="inline wrap">
+      <button class="btn" onclick="folder('${esc(n)}')">${ic("folder",14)} Folder</button>
+      <button class="btn" onclick="shots('${esc(n)}')">${ic("cam",14)} Screenshots</button>
+      <button class="btn" onclick="content('${esc(n)}')">${ic("layers",14)} Content</button>
+      <button class="btn hurt" onclick="kill('${esc(n)}')">${ic("trash",14)} Delete</button>
+    </div>`, async () => {
+    const r = await api("rename_instance", n, $("#im-n").value.trim());
+    if (!r.success) { say(r.error || "Rename failed.", "bad"); return false; }
+    const v = $("#im-i .on");
+    if (v) await api("set_instance_icon", n, v.dataset.v);
+    say("Saved.", "good");
   });
 }
-async function delInstance(name) {
-  closeModal();
-  if (!confirm(`Delete "${name}"? This removes its game directory.`)) return;
-  const r = await callApi("delete_instance", name);
-  toast(r.success ? "Deleted " + name : (r.error || "Couldn't delete."), r.success ? "ok" : "err");
+async function kill(n) {
+  close();
+  if (!confirm(`Delete "${n}" and its game directory?`)) return;
+  const r = await api("delete_instance", n);
+  say(r.success ? "Deleted " + n : (r.error || "Couldn't delete."), r.success ? "good" : "bad");
 }
-async function openFolder(name) {
-  const r = await callApi("open_instance_folder", name);
-  if (!r.success) toast(r.error || "Couldn't open.", "err");
+async function folder(n) {
+  const r = await api("open_instance_folder", n);
+  if (!r.success) say(r.error || "Couldn't open.", "bad");
 }
-
-/* ---- create instance ---- */
-async function openCreate() {
-  let versions = [];
-  const v = await callApi("get_versions");
-  if (v.success) versions = v.versions || v;
-  const body = `
-    <div class="field"><label>Loader</label>
-      <div class="seg" id="c-loader">
-        <button data-v="vanilla" class="on">Vanilla</button>
-        <button data-v="fabric">Fabric</button>
-        <button data-v="forge">Forge</button>
-      </div></div>
-    <div class="field"><label>Minecraft version</label><select class="select" id="c-version"></select></div>
-    <div class="field" id="c-loaderwrap" style="display:none"><label>Loader version</label><select class="select" id="c-loaderversion"></select></div>
-    <div class="field"><label>Instance name</label><input class="input" id="c-name" placeholder="My instance" maxlength="40"></div>
-    <div class="err" id="c-err"></div>`;
-  openModal("New instance", body, async () => {
-    const name = $("#c-name").value.trim();
-    if (!name) { $("#c-err").textContent = "Give it a name."; return false; }
-    const r = await callApi("create_instance", NEW.version, NEW.loader, NEW.loaderVersion, name);
-    if (!r.success) { $("#c-err").textContent = r.error || "Couldn't create."; return false; }
-    toast("Created " + name, "ok");
-  });
-  const sel = $("#c-version"), lw = $("#c-loaderwrap"), lv = $("#c-loaderversion");
-  const fill = () => {
-    sel.innerHTML = versions.map((x) => {
-      const id = typeof x === "string" ? x : (x.id || x.version);
-      return `<option value="${esc(id)}">${esc(id)}</option>`;
-    }).join("");
-    if (versions.length) { NEW.version = sel.value; sel.onchange = () => { NEW.version = sel.value; refreshLoader(); }; }
-    refreshLoader();
-  };
-  const refreshLoader = async () => {
-    if (NEW.loader === "vanilla") { lw.style.display = "none"; NEW.loaderVersion = null; return; }
-    lw.style.display = "";
-    const r = NEW.loader === "fabric"
-      ? await callApi("get_fabric_loaders", NEW.version)
-      : await callApi("get_forge_versions", NEW.version);
-    const opts = r.success ? (r.loaders || r.versions || []) : [];
-    lv.innerHTML = opts.map((x) => {
-      const id = typeof x === "string" ? x : (x.loader || x.version || x.id);
-      return `<option value="${esc(id)}">${esc(id)}</option>`;
-    }).join("");
-    NEW.loaderVersion = opts.length ? lv.value : null;
-    lv.onchange = () => { NEW.loaderVersion = lv.value; };
-    if (!opts.length) $("#c-err").textContent = "No loader builds found for that version.";
-  };
-  fill();
-  $("#c-name").value = "";
-  $$("#c-loader button").forEach((b) => b.addEventListener("click", () => {
-    $$("#c-loader button").forEach((x) => x.classList.remove("on"));
-    b.classList.add("on");
-    NEW.loader = b.dataset.v;
-    refreshLoader();
+async function shots(n) {
+  const r = await api("get_instance_screenshots", n);
+  const f = r.success ? (r.screenshots || r.files || []) : [];
+  open("Screenshots", f.length
+    ? `<div class="grid4">${f.map((x) => `<img class="cut" data-s="${esc(x)}" data-n="${esc(n)}" style="width:100%;border-radius:4px;cursor:zoom-in" alt="">`).join("")}</div>`
+    : `<div class="faint tiny">No screenshots here yet.</div>`);
+  $$("[data-s]").forEach((el) => el.addEventListener("click", async () => {
+    const d = await api("get_screenshot_image", el.dataset.n, el.dataset.s);
+    if (d.success && d.image) open(el.dataset.s, `<img src="${d.image}" style="width:100%;border-radius:4px" alt="">`);
   }));
 }
-
-/* ---- screenshots ---- */
-async function openShots(name) {
-  const r = await callApi("get_instance_screenshots", name);
-  const files = r.success ? (r.screenshots || r.files || []) : [];
-  const body = files.length
-    ? `<div class="grid g3">${files.map((f) => `<img class="cube" data-shot="${esc(f)}" data-inst="${esc(name)}" style="width:100%;border-radius:8px;cursor:zoom-in" alt="">`).join("")}</div>`
-    : `<div class="muted small">No screenshots in this instance yet.</div>`;
-  openModal("Screenshots — " + name, body);
-  $$("[data-shot]").forEach((img) => img.addEventListener("click", async () => {
-    const d = await callApi("get_screenshot_image", img.dataset.inst, img.dataset.shot);
-    if (d.success && d.image) openModal(img.dataset.shot, `<img src="${d.image}" style="width:100%;border-radius:8px" alt="">`);
-  }));
-}
-
-/* ---- instance content ---- */
-async function openContent(name) {
-  const i = STATE.instances.find((x) => x.name === name);
+async function content(n) {
+  const i = S.instances.find((x) => x.name === n);
   const kinds = i && i.loader !== "vanilla" ? ["mods", "resourcepacks", "shaderpacks"] : ["resourcepacks", "shaderpacks"];
-  const body = `<div class="seg" id="ct-seg">${kinds.map((k, n) => `<button data-v="${k}" class="${n === 0 ? "on" : ""}">${k.replace(/s$/, "")}</button>`).join("")}</div><div id="ct-list" style="margin-top:14px"></div>`;
-  openModal("Content — " + name, body);
-  const load = async (kind) => {
-    const r = await callApi("get_instance_content", name, kind);
+  open("Content", `<div class="seg" id="ct">${kinds.map((k, x) => `<button data-v="${k}" class="${x === 0 ? "on" : ""}">${k.replace(/s$/, "")}</button>`).join("")}</div><div id="ct-b" style="margin-top:14px"></div>`);
+  const load = async (k) => {
+    const r = await api("get_instance_content", n, k);
     const items = r.success ? (r.items || r.content || []) : [];
-    $("#ct-list").innerHTML = items.length
-      ? items.map((it) => {
+    $("#ct-b").innerHTML = items.length
+      ? `<div class="rows panel">${items.map((it) => {
           const fn = typeof it === "string" ? it : (it.filename || it.name);
-          const ver = typeof it === "object" ? (it.version ? " · " + it.version : "") : "";
-          return `<div class="row" style="padding:7px 0;border-bottom:1px solid var(--line-soft)">
-            <span class="grow small truncate">${esc(fn)}${esc(ver)}</span>
-          </div>`;
-        }).join("")
-      : `<div class="muted small">Nothing installed here yet.</div>`;
+          const v = typeof it === "object" && it.version ? " · " + it.version : "";
+          return `<div class="row"><span class="grow tiny cut">${esc(fn)}${esc(v)}</span></div>`;
+        }).join("")}</div>`
+      : `<div class="faint tiny">Nothing installed.</div>`;
   };
-  $$("#ct-seg button").forEach((b) => b.addEventListener("click", () => {
-    $$("#ct-seg button").forEach((x) => x.classList.remove("on"));
+  $$("#ct button").forEach((b) => b.addEventListener("click", () => {
+    $$("#ct button").forEach((x) => x.classList.remove("on"));
     b.classList.add("on");
     load(b.dataset.v);
   }));
   load(kinds[0]);
 }
-
-/* ============================================================ addons */
-let ADDON = { q: "", results: [], offset: 0, kind: "mod" };
-function pageAddons() {
-  return `<section class="page">
-    <div class="row" style="margin-bottom:14px">
-      <input class="input" id="ad-q" placeholder="Search Modrinth for mods, resource packs, modpacks, shaders" value="${esc(ADDON.q)}" style="max-width:460px">
-      <div class="seg" id="ad-kind">${["mod","resourcepack","modpack","shader"].map((k) =>
-        `<button data-v="${k}" class="${ADDON.kind === k ? "on" : ""}">${k === "resourcepack" ? "Resource pack" : k}</button>`).join("")}</div>
-    </div>
-    <div id="ad-list">${addonListHtml()}</div>
-  </section>`;
-}
-function addonListHtml() {
-  if (ADDON.loading) return `<div class="card empty">${icon("search",28)}<div>Searching...</div></div>`;
-  if (!ADDON.results.length) return `<div class="card empty">${icon("search",30)}<div>Search for something to install.</div></div>`;
-  return `<div class="grid g2">${ADDON.results.map((a) => `
-    <div class="card">
-      <div class="row" style="align-items:flex-start;gap:12px">
-        ${a.icon_url ? `<img src="${esc(a.icon_url)}" class="cube" style="width:38px;height:38px;flex:none" alt="">` : `<div class="ico" style="width:38px;height:38px;border-radius:9px;background:var(--surface-3);display:grid;place-items:center">${icon("layers",17)}</div>`}
-        <div class="grow" style="min-width:0">
-          <div class="nm truncate" style="font-weight:600">${esc(a.title)}</div>
-          <div class="meta small muted truncate">${esc(a.author || "")}</div>
-          <div class="small muted" style="margin-top:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc((a.description || "").slice(0, 160))}</div>
-        </div>
-      </div>
-      <div class="row" style="margin-top:12px">
-        <span class="pill">${esc(a.downloads ? fmtBytes(a.downloads) + " downloads" : a.project_type || ADDON.kind)}</span>
-        <span style="flex:1"></span>
-        <button class="btn sm primary" onclick="installAddon('${esc(a.id || a.project_id)}')">${icon("download",14)} Install</button>
-      </div>
-    </div>`).join("")}</div>`;
-}
-pageAddons.after = () => {
-  const q = $("#ad-q");
-  let t;
-  q.addEventListener("input", () => {
-    clearTimeout(t);
-    t = setTimeout(() => { ADDON.q = q.value.trim(); if (ADDON.q.length >= 2) searchAddons(); }, 380);
+async function create() {
+  const v = await api("get_versions");
+  const list = v.success ? (v.versions || v) : [];
+  open("New instance", `
+    <div><label class="fl eyebrow">Loader</label><div class="seg" id="c-l">
+      <button data-v="vanilla" class="on">Vanilla</button><button data-v="fabric">Fabric</button><button data-v="forge">Forge</button></div></div>
+    <div><label class="fl eyebrow" for="c-v">Minecraft version</label><select id="c-v">
+      ${list.map((x) => { const id = typeof x === "string" ? x : (x.id || x.version); return `<option>${esc(id)}</option>`; }).join("")}
+    </select></div>
+    <div id="c-lw" style="display:none"><label class="fl eyebrow" for="c-lv">Loader version</label><select id="c-lv"></select></div>
+    <div><label class="fl eyebrow" for="c-n">Name</label><input type="text" id="c-n" placeholder="My instance" maxlength="40"></div>
+    <div class="bad" id="c-e"></div>`, async () => {
+    const nm = $("#c-n").value.trim();
+    if (!nm) { $("#c-e").textContent = "Give it a name."; return false; }
+    const r = await api("create_instance", DRAFT.version, DRAFT.loader, DRAFT.loaderVersion, nm);
+    if (!r.success) { $("#c-e").textContent = r.error || "Couldn't create."; return false; }
+    say("Created " + nm, "good");
   });
-  $$("#ad-kind button").forEach((b) => b.addEventListener("click", () => {
-    $$("#ad-kind button").forEach((x) => x.classList.remove("on"));
+  const sv = $("#c-v"), lw = $("#c-lw"), lv = $("#c-lv");
+  const loaders = async () => {
+    if (DRAFT.loader === "vanilla") { lw.style.display = "none"; DRAFT.loaderVersion = null; return; }
+    lw.style.display = "";
+    const r = DRAFT.loader === "fabric"
+      ? await api("get_fabric_loaders", DRAFT.version)
+      : await api("get_forge_versions", DRAFT.version);
+    const o = r.success ? (r.loaders || r.versions || []) : [];
+    lv.innerHTML = o.map((x) => { const id = typeof x === "string" ? x : (x.loader || x.version || x.id); return `<option>${esc(id)}</option>`; }).join("");
+    DRAFT.loaderVersion = o.length ? lv.value : null;
+    lv.onchange = () => { DRAFT.loaderVersion = lv.value; };
+    if (!o.length) $("#c-e").textContent = "No loader builds for that version.";
+  };
+  DRAFT.version = sv.value || null;
+  sv.onchange = () => { DRAFT.version = sv.value; loaders(); };
+  loaders();
+  $$("#c-l button").forEach((b) => b.addEventListener("click", () => {
+    $$("#c-l button").forEach((x) => x.classList.remove("on"));
+    b.classList.add("on");
+    DRAFT.loader = b.dataset.v;
+    loaders();
+  }));
+}
+
+/* ==================================================== addons */
+VIEWS.addons = () => `<section class="view">
+  <div class="inline wrap" style="margin-bottom:16px">
+    <input type="text" id="ad-q" value="${esc(ADDON.q)}" placeholder="Search Modrinth" style="max-width:340px">
+    <div class="seg" id="ad-k">${["mod", "resourcepack", "modpack", "shader"].map((k) =>
+      `<button data-v="${k}" class="${ADDON.kind === k ? "on" : ""}">${k === "resourcepack" ? "Packs" : k}</button>`).join("")}</div>
+  </div>
+  <div id="ad-b">${addonGrid()}</div></section>`;
+VIEWS.addons.ready = () => {
+  let t;
+  $("#ad-q").addEventListener("input", (e) => {
+    clearTimeout(t);
+    t = setTimeout(() => { ADDON.q = e.target.value.trim(); ADDON.q.length >= 2 ? find() : null; }, 400);
+  });
+  $$("#ad-k button").forEach((b) => b.addEventListener("click", () => {
+    $$("#ad-k button").forEach((x) => x.classList.remove("on"));
     b.classList.add("on");
     ADDON.kind = b.dataset.v;
-    if (ADDON.q.length >= 2) searchAddons();
+    if (ADDON.q.length >= 2) find();
   }));
 };
-async function searchAddons() {
-  ADDON.loading = true;
-  $("#ad-list").innerHTML = addonListHtml();
-  const r = await callApi("search_addons", ADDON.q, ADDON.kind, ADDON.offset, 30);
-  ADDON.loading = false;
-  ADDON.results = r.success ? (r.hits || r.results || []) : [];
-  if (!r.success) toast(r.error || "Search failed.", "err");
-  const el = $("#ad-list");
-  if (el) el.innerHTML = addonListHtml();
+function addonGrid() {
+  if (ADDON.loading) return `<div class="panel"><div class="empty">${ic("find",26)}<b>Searching</b></div></div>`;
+  if (!ADDON.hits.length) return `<div class="panel"><div class="empty">${ic("find",26)}<b>Nothing yet</b><div class="tiny">Search for a mod, pack, modpack or shader.</div></div></div>`;
+  return `<div class="grid2">${ADDON.hits.map((a) => `
+    <div class="panel"><div class="body">
+      <div class="inline" style="align-items:flex-start;gap:12px">
+        ${a.icon_url ? `<img src="${esc(a.icon_url)}" style="width:40px;height:40px;border-radius:4px;flex:none" alt="">`
+          : `<div class="ico" style="width:40px;height:40px">${ic("layers",18)}</div>`}
+        <div class="grow">
+          <div class="nm cut">${esc(a.title)}</div>
+          <div class="sub cut">${esc(a.author || "")}</div>
+        </div>
+      </div>
+      <p class="tiny muted" style="margin:10px 0 0">${esc(cut(a.description, 150))}</p>
+      <div class="inline" style="margin-top:12px">
+        <span class="tag">${esc(a.downloads ? bytes(a.downloads) : (a.project_type || ADDON.kind))}</span>
+        <span class="grow"></span>
+        <button class="btn tiny go" onclick="put('${esc(a.id || a.project_id)}')">${ic("down",13)} Install</button>
+      </div>
+    </div></div>`).join("")}</div>`;
 }
-async function installAddon(projectId) {
+async function find() {
+  ADDON.loading = true;
+  const b = $("#ad-b");
+  if (b) b.innerHTML = addonGrid();
+  const r = await api("search_addons", ADDON.q, ADDON.kind, 0, 30);
+  ADDON.loading = false;
+  ADDON.hits = r.success ? (r.hits || r.results || []) : [];
+  if (!r.success) say(r.error || "Search failed.", "bad");
+  const el = $("#ad-b");
+  if (el) el.innerHTML = addonGrid();
+}
+async function put(pid) {
   if (ADDON.kind === "modpack") {
-    const r = await callApi("install_modpack", projectId);
-    toast(r.success ? "Installing modpack..." : (r.error || "Failed."), r.success ? "ok" : "err");
+    const r = await api("install_modpack", pid);
+    say(r.success ? "Installing modpack..." : (r.error || "Failed."), r.success ? "good" : "bad");
     return;
   }
-  const targets = await callApi("get_addon_targets", ADDON.kind);
-  const insts = targets.success ? (targets.instances || targets.targets || []) : [];
-  if (!insts.length) { toast("No instance can use this yet.", "err"); return; }
-  openModal("Install to", `
-    <div class="hint" id="ad-deps">Checking dependencies...</div>
-    <div id="ai-list">${insts.map((i) => `
-    <label class="row" style="padding:8px 0;cursor:pointer">
-      <input type="checkbox" value="${esc(i.name)}" checked style="accent-color:var(--accent)">
-      <span class="grow">${esc(i.name)}</span><span class="muted small">${esc(i.version)} · ${esc(i.loader)}</span>
-    </label>`).join("")}</div>`, async () => {
-    const picked = $$("#ai-list input:checked").map((x) => x.value);
-    if (!picked.length) { toast("Pick at least one instance.", "err"); return false; }
+  const t = await api("get_addon_targets", ADDON.kind);
+  const list = t.success ? (t.instances || t.targets || []) : [];
+  if (!list.length) return say("No instance can use this yet.", "bad");
+  open("Install to", `
+    <div class="tiny faint" id="ad-dep">Checking dependencies...</div>
+    <div>${list.map((i) => `<label class="inline" style="cursor:pointer;padding:5px 0">
+      <input type="checkbox" value="${esc(i.name)}" checked>
+      <span class="grow">${esc(i.name)}</span>
+      <span class="tiny faint">${esc(i.version)} · ${esc(i.loader)}</span></label>`).join("")}</div>`, async () => {
+    const picked = $$('#sheet input[type=checkbox]:checked').map((x) => x.value);
+    if (!picked.length) { say("Pick an instance.", "bad"); return false; }
     for (const n of picked) {
-      const r = await callApi("install_addon", projectId, ADDON.kind, n, true);
-      if (!r.success) toast(n + ": " + (r.error || "failed"), "err");
+      const r = await api("install_addon", pid, ADDON.kind, n, true);
+      if (!r.success) say(n + ": " + (r.error || "failed"), "bad");
     }
-    toast("Installing.", "ok");
+    say("Installing.", "good");
   });
-  const d = await callApi("get_addon_dependencies", projectId, insts[0] && insts[0].name);
+  const d = await api("get_addon_dependencies", pid, list[0] && list[0].name);
   const deps = d.success ? (d.dependencies || []) : [];
-  const slot = $("#ad-deps");
-  if (slot) slot.innerHTML = deps.length
-    ? `Also installs: ${deps.map((x) => esc(typeof x === "string" ? x : (x.title || x.project_id || x.id))).join(", ")}`
+  const slot = $("#ad-dep");
+  if (slot) slot.textContent = deps.length
+    ? "Also installs: " + deps.map((x) => typeof x === "string" ? x : (x.title || x.project_id || x.id)).join(", ")
     : "No extra dependencies.";
 }
 
-/* ============================================================ skins */
-function pageSkins() {
-  return `<section class="page">
-    <div class="grid g2">
-      <div class="card">
-        <div class="card-h"><h2>Current</h2></div>
-        <div id="sk-cur" class="muted small">Loading...</div>
-      </div>
-      <div class="card">
-        <div class="card-h"><h2>Library</h2><span class="spacer" style="flex:1"></span>
-          <button class="btn sm" onclick="pickSkinFile()">${icon("plus",14)} Add skin</button></div>
-        <div id="sk-lib" class="muted small">Loading...</div>
-      </div>
-    </div>
-    <div class="card" style="margin-top:14px">
-      <div class="card-h"><h2>Catalog</h2></div>
-      <div id="sk-cat" class="muted small">Loading...</div>
-    </div>
-  </section>`;
-}
-pageSkins.after = async () => {
-  await loadLocalSkin();
-  loadSavedSkins();
-  loadCatalog();
-};
-async function loadLocalSkin() {
-  const r = await callApi("local_skin_state");
-  const el = $("#sk-cur");
+/* ==================================================== skins */
+VIEWS.skins = () => `<section class="view"><div class="grid2">
+  <div class="panel"><header><span class="eyebrow grow">Equipped</span></header><div class="body" id="sk-me">...</div></div>
+  <div class="panel"><header><span class="eyebrow grow">Library</span>
+    <button class="btn tiny" onclick="fromFile()">${ic("plus",13)} Add</button></header>
+    <div class="body" id="sk-lib">...</div></div>
+</div>
+<div class="panel"><header><span class="eyebrow grow">Catalog</span></header><div class="body" id="sk-cat">...</div></div>
+</section>`;
+VIEWS.skins.ready = () => { me(); lib(); cat(); };
+async function me() {
+  const el = $("#sk-me");
   if (!el) return;
-  if (!r.success) {
-    el.innerHTML = `<div>${esc(r.error || "Unavailable.")}</div>` +
-      (STATE.instances.some((i) => i.loader !== "vanilla") ? "" : `<div class="hint" style="margin-top:8px">Local skins need a Fabric or Forge instance with CustomSkinLoader.</div>`);
-    return;
-  }
-  SK.local = r;
-  const plan = await callApi("local_skin_plan");
-  const installed = plan.success ? plan.installed.length : 0;
-  const installable = plan.success ? plan.installable.length : 0;
+  const r = await api("local_skin_state");
+  if (!r.success) { el.innerHTML = `<div class="tiny faint">${esc(r.error || "Unavailable.")}</div>`; return; }
+  SK.me = r;
+  const p = await api("local_skin_plan");
+  const have = p.success ? p.installed.length : 0;
+  const want = p.success ? p.installable.length : 0;
   el.innerHTML = `
-    <div class="row" style="align-items:flex-start;gap:14px">
-      ${r.skin ? `<img src="${r.skin}" class="cube" style="width:76px;height:76px" alt="">`
-               : `<div class="cube" style="width:76px;height:76px;background:var(--surface-3)"></div>`}
+    <div class="inline" style="align-items:flex-start;gap:14px">
+      ${r.skin ? `<img src="${r.skin}" style="width:72px;height:72px;border-radius:4px;image-rendering:pixelated" alt="">`
+               : `<div style="width:72px;height:72px;border-radius:4px;background:var(--hover)"></div>`}
       <div class="grow">
-        <div style="font-weight:600">${esc(r.name || "player")}</div>
-        <div class="muted small">${r.skin ? "Local skin applied" : "No local skin set"}</div>
-        <div class="hint" style="margin-top:6px">${installed} instance${installed === 1 ? "" : "s"} with CustomSkinLoader${installable ? `, ${installable} could use it` : ""}</div>
+        <div class="nm" style="font-size:15px">${esc(r.name || "player")}</div>
+        <div class="sub">${r.skin ? "Local skin applied" : "No local skin"}</div>
+        <div class="tiny faint" style="margin-top:5px">${have} instance${have === 1 ? "" : "s"} ready${want ? `, ${want} can be set up` : ""}</div>
       </div>
     </div>
-    <div class="row wrap" style="margin-top:14px">
-      <button class="btn sm" onclick="openCapes()">${icon("shirt",14)} Capes</button>
-      <button class="btn sm" onclick="chooseSkin()">${icon("download",14)} Apply skin</button>
-      <button class="btn sm" onclick="saveCurrentSkin()">${icon("plus",14)} Save</button>
-      ${installable ? `<button class="btn sm" onclick="installCsl()">${icon("download",14)} Install CSL on ${installable}</button>` : ""}
-      <button class="btn sm danger" onclick="resetSkin()">${icon("refresh",14)} Reset</button>
+    <div class="inline wrap" style="margin-top:13px">
+      <button class="btn tiny" onclick="capes()">${ic("shirt",13)} Capes</button>
+      <button class="btn tiny" onclick="pick()">${ic("down",13)} Apply</button>
+      <button class="btn tiny" onclick="keep()">${ic("plus",13)} Save</button>
+      ${want ? `<button class="btn tiny" onclick="csl()">${ic("down",13)} Set up ${want}</button>` : ""}
+      <button class="btn tiny hurt" onclick="clearSkin()">${ic("restart",13)} Reset</button>
     </div>`;
 }
-async function loadSavedSkins() {
-  const r = await callApi("list_saved_skins");
-  const items = r.success ? (r.skins || []) : [];
-  SK.saved = items;
+async function lib() {
   const el = $("#sk-lib");
   if (!el) return;
-  el.innerHTML = items.length
-    ? `<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:10px">
-        ${items.map((s) => `<div style="text-align:center;position:relative">
-          <img src="${s.image}" class="cube" data-apply="${esc(s.id)}" style="width:100%;border-radius:8px;cursor:pointer" title="${esc(s.name)}" alt="">
-          <button class="btn sm ghost iconbtn" data-del="${esc(s.id)}" title="Remove" style="position:absolute;top:3px;right:3px;background:var(--surface-2)">${icon("x",12)}</button>
-          <div class="small muted truncate" style="margin-top:4px">${esc(s.name)}</div></div>`).join("")}</div>`
-    : `<div>No saved skins yet.</div>`;
-  $$("[data-apply]").forEach((i) => i.addEventListener("click", async () => {
-    const s = SK.saved.find((x) => x.id === i.dataset.apply);
-    const res = await callApi("local_set_skin", s.image, null);
-    toast(res.success ? "Applied." : (res.error || "Failed."), res.success ? "ok" : "err");
-    if (res.success) loadLocalSkin();
+  const r = await api("list_saved_skins");
+  const f = r.success ? (r.skins || []) : [];
+  SK.lib = f;
+  el.innerHTML = f.length
+    ? `<div class="grid3">${f.map((s) => `<div style="position:relative">
+        <img src="${s.image}" data-put="${esc(s.id)}" style="width:100%;border-radius:4px;cursor:pointer" title="${esc(s.name)}" alt="">
+        <button class="btn tiny icon flat" data-gone="${esc(s.id)}" style="position:absolute;top:3px;right:3px;background:var(--panel)">${ic("x",12)}</button>
+      </div>`).join("")}</div>`
+    : `<div class="tiny faint">Nothing saved yet.</div>`;
+  $$("[data-put]").forEach((el2) => el2.addEventListener("click", async () => {
+    const s = SK.lib.find((x) => x.id === el2.dataset.put);
+    const r2 = await api("local_set_skin", s.image, null);
+    say(r2.success ? "Applied." : (r2.error || "Failed."), r2.success ? "good" : "bad");
+    if (r2.success) me();
   }));
-  $$("[data-del]").forEach((b) => b.addEventListener("click", async (e) => {
+  $$("[data-gone]").forEach((b) => b.addEventListener("click", async (e) => {
     e.stopPropagation();
-    const res = await callApi("delete_saved_skin", b.dataset.del);
-    toast(res.success ? "Removed." : (res.error || "Failed."), res.success ? "ok" : "err");
-    loadSavedSkins();
+    const r2 = await api("delete_saved_skin", b.dataset.gone);
+    say(r2.success ? "Removed." : (r2.error || "Failed."), r2.success ? "good" : "bad");
+    lib();
   }));
 }
-async function saveCurrentSkin() {
-  if (!SK.local || !SK.local.skin) return toast("No skin applied yet.", "err");
-  const r = await callApi("save_skin", (SK.local.name || "skin") + " skin", SK.local.skin, "classic", null);
-  toast(r.success ? "Saved to library." : (r.error || "Failed."), r.success ? "ok" : "err");
-  if (r.success) loadSavedSkins();
-}
-async function installCsl() {
-  const plan = await callApi("local_skin_plan");
-  const list = plan.success ? plan.installable : [];
-  if (!list.length) return toast("No instance needs CustomSkinLoader.", "err");
-  openModal("Install CustomSkinLoader", `<div id="csl-list">${list.map((i) => `
-    <label class="row" style="padding:8px 0;cursor:pointer">
-      <input type="checkbox" value="${esc(i.name)}" checked style="accent-color:var(--accent)">
-      <span class="grow">${esc(i.name)}</span><span class="muted small">${esc(i.version)} · ${esc(i.loader)}</span>
-    </label>`).join("")}</div>`, async () => {
-    for (const n of $$("#csl-list input:checked").map((x) => x.value)) {
-      const r = await callApi("local_install_csl", n);
-      if (!r.success) toast(n + ": " + (r.error || "failed"), "err");
-    }
-    toast("Installing.", "ok");
-  });
-}
-async function loadCatalog() {
+async function cat() {
   const el = $("#sk-cat");
   if (!el) return;
-  const r = await callApi("catalog_all");
+  const r = await api("catalog_all");
   if (!r.success) { el.textContent = r.error || "Catalog unavailable."; return; }
-  SK.catalog = r.skins || [];
-  el.innerHTML = `<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:10px">
-    ${SK.catalog.slice(0, 60).map((s) => `<img src="" data-cat="${esc(s.url)}" class="cube" style="width:100%;border-radius:8px;cursor:pointer" alt="${esc(s.name)}">`).join("")}
-  </div>`;
-  SK.catalog.slice(0, 60).forEach((s, i) => {
-    const img = $$("[data-cat]")[i];
-    if (img) img.addEventListener("click", async () => {
-      const d = await callApi("catalog_fetch_skin", s.url);
-      if (!d.success) { toast(d.error || "Couldn't load.", "err"); return; }
-      const res = await callApi("local_set_skin", d.image, null);
-      toast(res.success ? "Applied." : (res.error || "Failed."), res.success ? "ok" : "err");
-      if (res.success) loadLocalSkin();
+  SK.cat = (r.skins || []).slice(0, 48);
+  el.innerHTML = `<div class="grid4">${SK.cat.map((s, k) =>
+    `<img data-c="${k}" style="width:100%;border-radius:4px;cursor:pointer;alt" alt="${esc(s.name)}">`).join("")}</div>`;
+  $$("[data-c]").forEach((img) => {
+    const s = SK.cat[+img.dataset.c];
+    img.addEventListener("mouseenter", async () => { if (!img.src) { const d = await api("catalog_fetch_skin", s.url); if (d.success) img.src = d.image; } });
+    img.addEventListener("click", async () => {
+      const d = await api("catalog_fetch_skin", s.url);
+      if (!d.success) return say(d.error || "Couldn't load.", "bad");
+      const r2 = await api("local_set_skin", d.image, null);
+      say(r2.success ? "Applied." : (r2.error || "Failed."), r2.success ? "good" : "bad");
+      if (r2.success) me();
     });
   });
 }
-function pickSkinFile() {
-  const inp = document.createElement("input");
-  inp.type = "file";
-  inp.accept = "image/png";
-  inp.addEventListener("change", async () => {
-    const f = inp.files[0];
+async function pick() {
+  if (!SK.cat) return say("Catalog still loading.", "bad");
+  open("Choose a skin", `<div class="grid4">${SK.cat.slice(0, 30).map((s) =>
+    `<img data-p="${esc(s.url)}" style="width:100%;border-radius:4px;cursor:pointer" alt="">`).join("")}</div>`);
+  $$("[data-p]").forEach((i) => i.addEventListener("click", async () => {
+    const d = await api("catalog_fetch_skin", i.dataset.p);
+    if (!d.success) return say(d.error || "Failed.", "bad");
+    const r2 = await api("local_set_skin", d.image, null);
+    close();
+    say(r2.success ? "Applied." : (r2.error || "Failed."), r2.success ? "good" : "bad");
+    me();
+  }));
+}
+function fromFile() {
+  const i = document.createElement("input");
+  i.type = "file";
+  i.accept = "image/png";
+  i.addEventListener("change", () => {
+    const f = i.files[0];
     if (!f) return;
-    const b = new FileReader();
-    b.onload = async () => {
-      const res = await callApi("local_set_skin", b.result, null);
-      toast(res.success ? "Applied." : (res.error || "Failed."), res.success ? "ok" : "err");
-      if (res.success) loadLocalSkin();
+    const rd = new FileReader();
+    rd.onload = async () => {
+      const r = await api("local_set_skin", rd.result, null);
+      say(r.success ? "Applied." : (r.error || "Failed."), r.success ? "good" : "bad");
+      if (r.success) me();
     };
-    b.readAsDataURL(f);
+    rd.readAsDataURL(f);
   });
-  inp.click();
+  i.click();
 }
-async function chooseSkin() {
-  if (!SK.catalog) return toast("Catalog still loading.", "err");
-  openModal("Choose a skin", `<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:9px">
-    ${SK.catalog.slice(0, 40).map((s) => `<img data-pick="${esc(s.url)}" class="cube" style="width:100%;border-radius:7px;cursor:pointer" alt="${esc(s.name)}">`).join("")}</div>`);
-  $$("[data-pick]").forEach((i) => i.addEventListener("click", async () => {
-    const d = await callApi("catalog_fetch_skin", i.dataset.pick);
-    if (!d.success) return toast(d.error || "Failed.", "err");
-    const res = await callApi("local_set_skin", d.image, null);
-    closeModal();
-    toast(res.success ? "Applied." : (res.error || "Failed."), res.success ? "ok" : "err");
-    loadLocalSkin();
-  }));
+async function keep() {
+  if (!SK.me || !SK.me.skin) return say("Nothing applied to save.", "bad");
+  const r = await api("save_skin", (SK.me.name || "skin") + " skin", SK.me.skin, "classic", null);
+  say(r.success ? "Saved." : (r.error || "Failed."), r.success ? "good" : "bad");
+  if (r.success) lib();
 }
-async function openCapes() {
-  const r = await callApi("local_capes");
-  const capes = r.success ? (r.capes || []) : [];
-  openModal("Capes", `<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:9px">
-    ${capes.map((c) => `<div style="text-align:center"><img data-cape="${esc(c.id)}" class="cube" style="width:100%;border-radius:7px;cursor:pointer;background:var(--surface-3)" alt="${esc(c.name)}"><div class="small muted truncate">${esc(c.name)}</div></div>`).join("")}
-  </div>`);
-  $$("[data-cape]").forEach((i) => i.addEventListener("click", async () => {
-    const d = await callApi("local_cape_image", i.dataset.cape);
+async function csl() {
+  const p = await api("local_skin_plan");
+  const l = p.success ? p.installable : [];
+  if (!l.length) return say("Nothing to set up.", "bad");
+  open("Set up CustomSkinLoader", l.map((i) => `<label class="inline" style="cursor:pointer;padding:5px 0">
+    <input type="checkbox" value="${esc(i.name)}" checked>
+    <span class="grow">${esc(i.name)}</span><span class="tiny faint">${esc(i.version)} · ${esc(i.loader)}</span></label>`).join(""), async () => {
+    for (const n of $$('#sheet input[type=checkbox]:checked').map((x) => x.value)) {
+      const r = await api("local_install_csl", n);
+      if (!r.success) say(n + ": " + (r.error || "failed"), "bad");
+    }
+    say("Installing.", "good");
+  });
+}
+async function capes() {
+  const r = await api("local_capes");
+  const l = r.success ? (r.capes || []) : [];
+  open("Capes", `<div class="grid3">${l.map((c) =>
+    `<div><img data-cap="${esc(c.id)}" style="width:100%;border-radius:4px;cursor:pointer;background:var(--hover)" alt=""><div class="tiny faint cut">${esc(c.name)}</div></div>`).join("")}</div>`);
+  $$("[data-cap]").forEach((i) => i.addEventListener("click", async () => {
+    const d = await api("local_cape_image", i.dataset.cap);
     if (d.success && d.image) i.src = d.image;
-    const res = await callApi("local_set_cape", i.dataset.cape, null);
-    closeModal();
-    toast(res.success ? "Cape applied." : (res.error || "Failed."), res.success ? "ok" : "err");
-    loadLocalSkin();
+    const r2 = await api("local_set_cape", i.dataset.cap, null);
+    close();
+    say(r2.success ? "Cape applied." : (r2.error || "Failed."), r2.success ? "good" : "bad");
+    me();
   }));
 }
-async function resetSkin() {
-  const res = await callApi("local_reset");
-  toast(res.success ? "Reset." : (res.error || "Failed."), res.success ? "ok" : "err");
-  loadLocalSkin();
+async function clearSkin() {
+  const r = await api("local_reset");
+  say(r.success ? "Reset." : (r.error || "Failed."), r.success ? "good" : "bad");
+  me();
 }
 
-/* ============================================================ servers */
-function pageServers() {
+/* ==================================================== servers */
+VIEWS.servers = () => {
   if (!SRV.loaded) {
-    // Synchronous on purpose: renderPage assigns the return value straight into
-    // the DOM, so an async page function would splice in a Promise.
-    loadServers();
-    return `<section class="page"><div class="card empty">${icon("server",28)}<div>Loading servers...</div></div></section>`;
+    servers();
+    return `<section class="view"><div class="panel"><div class="empty">${ic("server",26)}<b>Loading</b></div></div></section>`;
   }
   const body = SRV.list.length
-    ? `<div class="grid">${SRV.list.map((s) => {
-        const live = SRV.running.includes(s.name);
-        return `<div class="inst">
-          <div class="ico">${icon("server",19)}</div>
-          <div class="grow">
-            <div class="nm truncate">${esc(s.name)} ${live ? '<span class="pill ok">running</span>' : ""}</div>
-            <div class="meta">${esc(s.software || "vanilla")} · ${esc(s.version || "")}${DISK.servers[s.name] ? " · " + fmtBytes(DISK.servers[s.name]) : ""}</div>
-          </div>
-          <div class="row">
-            ${live
-              ? `<button class="btn sm" onclick="srvAct('${esc(s.name)}','restart')">${icon("refresh",14)}</button>
-                 <button class="btn sm danger" onclick="srvAct('${esc(s.name)}','stop')">${icon("stop",14)} Stop</button>`
-              : `<button class="btn sm primary" onclick="srvAct('${esc(s.name)}','start')">${icon("play",14)} Start</button>`}
-            <button class="btn sm" onclick="openServer('${esc(s.name)}')">${icon("gear",14)}</button>
-          </div>
+    ? `<div class="panel"><div class="rows">${SRV.list.map((s) => {
+        const live = S.running.includes(s.name);
+        return `<div class="row">
+          <div class="ico">${ic("server",17)}</div>
+          <div class="grow"><div class="nm cut">${esc(s.name)} ${live ? '<span class="tag live">running</span>' : ""}</div>
+            <div class="sub">${esc(s.software || "vanilla")} · ${esc(s.version || "")}${SIZE.servers[s.name] ? " · " + bytes(SIZE.servers[s.name]) : ""}</div></div>
+          ${live
+            ? `<button class="btn tiny" onclick="srv('${esc(s.name)}','restart')">${ic("restart",13)}</button>
+               <button class="btn tiny hurt" onclick="srv('${esc(s.name)}','stop')">${ic("stop",13)} Stop</button>`
+            : `<button class="btn tiny go" onclick="srv('${esc(s.name)}','start')">${ic("play",13)} Start</button>`}
+          <button class="btn tiny icon" onclick="srvMenu('${esc(s.name)}')">${ic("cog",14)}</button>
         </div>`;
-      }).join("")}</div>`
-    : `<div class="card empty">${icon("server",30)}<div>No servers yet.</div>
-       <button class="btn primary" onclick="openCreateServer()">${icon("plus",15)} Create server</button></div>`;
-  return `<section class="page">
-    <div class="row" style="margin-bottom:14px">
-      <span class="muted small">${SRV.list.length} server${SRV.list.length === 1 ? "" : "s"}</span>
-      <span style="flex:1"></span>
-      <button class="btn primary" onclick="openCreateServer()">${icon("plus",15)} New server</button>
+      }).join("")}</div></div>`
+    : `<div class="panel"><div class="empty">${ic("server",26)}<b>No servers</b>
+        <div class="tiny">Spin one up without leaving the launcher.</div>
+        <div style="margin-top:14px"><button class="btn go" onclick="newServer()">${ic("plus",14)} New server</button></div></div></div>`;
+  return `<section class="view">
+    <div class="inline" style="margin-bottom:14px">
+      <span class="tiny faint">${SRV.list.length} total</span><span class="grow"></span>
+      <button class="btn go" onclick="newServer()">${ic("plus",14)} New server</button>
     </div>${body}</section>`;
-}
-async function loadServers() {
+};
+async function servers() {
   if (SRV.loading) return;
   SRV.loading = true;
-  const r = await callApi("get_servers");
+  const r = await api("get_servers");
   SRV.list = r.success ? (r.servers || r || []) : [];
   SRV.loading = false;
   SRV.loaded = true;
-  if (ROUTE === "servers") renderPage();
+  if (WHERE === "servers") go("servers");
 }
-async function srvAct(name, act) {
+async function srv(n, act) {
   if (act === "start") {
-    const eula = await callApi("accept_eula", name);
-    if (eula && eula.success === false && /eula/i.test(eula.error || "")) {
-      if (!confirm("This server needs Mojang's EULA accepted to start. Accept and continue?")) return;
-      await callApi("accept_eula", name);
+    const e = await api("accept_eula", n);
+    if (e && e.success === false && /eula/i.test(e.error || "")) {
+      if (!confirm("Accept Mojang's EULA and start?")) return;
+      await api("accept_eula", n);
     }
   }
-  const method = act === "start" ? "start_server" : act === "restart" ? "restart_server" : "stop_server";
-  const r = await callApi(method, name);
-  if (!r.success) toast(r.error || "Failed.", "err");
-  else toast(act === "start" ? "Starting..." : act === "restart" ? "Restarting..." : "Stopping...", "ok");
+  const m = act === "start" ? "start_server" : act === "restart" ? "restart_server" : "stop_server";
+  const r = await api(m, n);
+  if (!r.success) say(r.error || "Failed.", "bad");
+  else say(act === "stop" ? "Stopping..." : "Starting...", "good");
 }
-async function openCreateServer() {
-  const r = await callApi("get_server_versions");
-  const opts = r.success ? (r.versions || r.options || ["vanilla", "paper", "fabric"]) : ["vanilla"];
-  openModal("New server", `
-    <div class="field"><label>Name</label><input class="input" id="sv-name" placeholder="My server" maxlength="40"></div>
-    <div class="field"><label>Software</label><select class="select" id="sv-sw">
-      ${opts.map((o) => { const id = typeof o === "string" ? o : o.id; return `<option value="${esc(id)}">${esc(id)}</option>`; }).join("")}
-    </select></div>
-    <div class="field"><label>Version</label><input class="input" id="sv-ver" placeholder="latest"></div>
-    <div class="err" id="sv-err"></div>`, async () => {
-    const n = $("#sv-name").value.trim();
-    if (!n) { $("#sv-err").textContent = "Give it a name."; return false; }
-    const res = await callApi("create_server", n, $("#sv-sw").value, $("#sv-ver").value.trim() || "latest");
-    if (!res.success) { $("#sv-err").textContent = res.error || "Couldn't create."; return false; }
-    toast("Created " + n, "ok");
+async function newServer() {
+  const r = await api("get_server_versions");
+  const o = r.success ? (r.versions || r.options || ["vanilla", "paper", "fabric"]) : ["vanilla"];
+  open("New server", `
+    <div><label class="fl eyebrow" for="ns-n">Name</label><input type="text" id="ns-n" maxlength="40" placeholder="My server"></div>
+    <div><label class="fl eyebrow" for="ns-s">Software</label><select id="ns-s">
+      ${o.map((x) => { const id = typeof x === "string" ? x : x.id; return `<option>${esc(id)}</option>`; }).join("")}</select></div>
+    <div><label class="fl eyebrow" for="ns-v">Version</label><input type="text" id="ns-v" value="latest"></div>
+    <div class="bad" id="ns-e"></div>`, async () => {
+    const n = $("#ns-n").value.trim();
+    if (!n) { $("#ns-e").textContent = "Give it a name."; return false; }
+    const rr = await api("create_server", n, $("#ns-s").value, $("#ns-v").value.trim() || "latest");
+    if (!rr.success) { $("#ns-e").textContent = rr.error || "Couldn't create."; return false; }
+    say("Created " + n, "good");
+    SRV.loaded = false;
   });
 }
-async function openServer(name) {
-  const r = await callApi("get_server_settings", name);
-  const cfg = r.success ? (r.settings || r.config || {}) : {};
-  const body = `
-    <div class="grid g2">
-      <div class="field"><label>MOTD</label><input class="input" id="sv-motd" value="${esc(cfg.motd || "")}"></div>
-      <div class="field"><label>Memory (MB)</label><input class="input" id="sv-mem" value="${esc(cfg.memory_mb ?? 2048)}"></div>
-      <div class="field"><label>Max players</label><input class="input" id="sv-max" value="${esc(cfg.max_players ?? 20)}"></div>
-      <div class="field"><label>Port</label><input class="input" id="sv-port" value="${esc(cfg.port ?? 25565)}"></div>
-      <div class="field"><label>Difficulty</label><select class="select" id="sv-diff">
-        ${["peaceful","easy","normal","hard"].map((d) => `<option ${d === cfg.difficulty ? "selected" : ""}>${d}</option>`).join("")}</select></div>
-      <div class="field"><label>Game mode</label><select class="select" id="sv-gm">
-        ${["survival","creative","adventure","spectator"].map((d) => `<option ${d === cfg.gamemode ? "selected" : ""}>${d}</option>`).join("")}</select></div>
-    </div>
-    <div class="row wrap">
-      <button class="btn" onclick="srvConsole('${esc(name)}')">${icon("server",15)} Console</button>
-      <button class="btn" onclick="srvPlugins('${esc(name)}')">${icon("layers",15)} Plugins</button>
-      <button class="btn" onclick="srvFolder('${esc(name)}')">${icon("folder",15)} Folder</button>
-      <button class="btn" onclick="srvMods('${esc(name)}')">${icon("download",15)} Mods</button>
-      <button class="btn danger" onclick="delServer('${esc(name)}')">${icon("trash",15)} Delete</button>
-    </div>
-    <div class="err" id="sv2-err"></div>`;
-  openModal("Server — " + name, body, async () => {
-    const patch = {
-      motd: $("#sv-motd").value,
-      memory_mb: Number($("#sv-mem").value) || 2048,
-      max_players: Number($("#sv-max").value) || 20,
-      port: Number($("#sv-port").value) || 25565,
-      difficulty: $("#sv-diff").value,
-      gamemode: $("#sv-gm").value,
-    };
-    const res = await callApi("update_server_settings", name, patch);
-    if (!res.success) { $("#sv2-err").textContent = res.error || "Couldn't save."; return false; }
-    toast("Saved.", "ok");
+function srvMenu(n) {
+  open("Server", `<div id="sr-b"></div>`, null);
+  api("get_server_settings", n).then((r) => {
+    const c = r.success ? (r.settings || r.config || {}) : {};
+    $("#sr-b").innerHTML = `
+      <div class="grid2">
+        <div><label class="fl eyebrow">MOTD</label><input type="text" id="sm-motd" value="${esc(c.motd || "")}"></div>
+        <div><label class="fl eyebrow">Memory (MB)</label><input type="number" id="sm-mem" value="${esc(c.memory_mb ?? 2048)}"></div>
+        <div><label class="fl eyebrow">Max players</label><input type="number" id="sm-max" value="${esc(c.max_players ?? 20)}"></div>
+        <div><label class="fl eyebrow">Port</label><input type="number" id="sm-port" value="${esc(c.port ?? 25565)}"></div>
+        <div><label class="fl eyebrow">Difficulty</label><select id="sm-d">
+          ${["peaceful","easy","normal","hard"].map((d) => `<option ${d === c.difficulty ? "selected" : ""}>${d}</option>`).join("")}</select></div>
+        <div><label class="fl eyebrow">Game mode</label><select id="sm-g">
+          ${["survival","creative","adventure","spectator"].map((d) => `<option ${d === c.gamemode ? "selected" : ""}>${d}</option>`).join("")}</select></div>
+      </div>
+      <div class="inline wrap">
+        <button class="btn" onclick="console_('${esc(n)}')">${ic("server",14)} Console</button>
+        <button class="btn" onclick="plugins('${esc(n)}')">${ic("layers",14)} Plugins</button>
+        <button class="btn" onclick="api('open_server_folder','${esc(n)}')">${ic("folder",14)} Folder</button>
+        <button class="btn" onclick="srvMods('${esc(n)}')">${ic("down",14)} Mods</button>
+        <button class="btn hurt" onclick="dropServer('${esc(n)}')">${ic("trash",14)} Delete</button>
+      </div>
+      <div class="bad" id="sm-e"></div>`;
+    open("Server", $("#sr-b").innerHTML, async () => {
+      const rr = await api("update_server_settings", n, {
+        motd: $("#sm-motd").value,
+        memory_mb: Number($("#sm-mem").value) || 2048,
+        max_players: Number($("#sm-max").value) || 20,
+        port: Number($("#sm-port").value) || 25565,
+        difficulty: $("#sm-d").value,
+        gamemode: $("#sm-g").value,
+      });
+      if (!rr.success) { $("#sm-e").textContent = rr.error || "Couldn't save."; return false; }
+      say("Saved.", "good");
+    });
   });
 }
-async function srvFolder(name) { await callApi("open_server_folder", name); }
-async function delServer(name) {
-  closeModal();
-  if (!confirm(`Delete server "${name}"? Its files are removed.`)) return;
-  const r = await callApi("delete_server", name);
-  toast(r.success ? "Deleted " + name : (r.error || "Couldn't delete."), r.success ? "ok" : "err");
+async function dropServer(n) {
+  close();
+  if (!confirm(`Delete server "${n}"?`)) return;
+  const r = await api("delete_server", n);
+  say(r.success ? "Deleted " + n : (r.error || "Couldn't delete."), r.success ? "good" : "bad");
   SRV.loaded = false;
 }
-async function srvConsole(name) {
-  SRV.sel = name;
-  openModal("Console — " + name, `<div class="log" id="sv-log">Loading...</div>
-    <div class="row" style="margin-top:10px"><input class="input" id="sv-cmd" placeholder="Command, e.g. say hello">
-    <button class="btn primary" onclick="sendCmd()">${icon("send",14)}</button></div>
-    <div id="sv-players" class="row wrap" style="margin-top:10px"></div>`);
-  const log = $("#sv-log");
+async function console_(n) {
+  SRV.sel = n;
+  open("Console", `<div class="code" id="cv-log">...</div>
+    <div class="inline" style="margin-top:10px"><input type="text" id="cv-cmd" placeholder="Command">
+    <button class="btn go" id="cv-send">${ic("send",13)}</button></div>
+    <div class="inline wrap" id="cv-who" style="margin-top:10px"></div>`);
   const pull = async () => {
-    const r = await callApi("get_server_log", name);
-    if (r.success) {
-      const t = r.log || r.text || "";
-      log.innerHTML = t.split("\n").map((l) => `<div class="${l.startsWith("[") ? "sys" : ""}">${esc(l)}</div>`).join("");
-      log.scrollTop = log.scrollHeight;
+    const l = await api("get_server_log", n);
+    if (l.success) {
+      const t = l.log || l.text || "";
+      const box = $("#cv-log");
+      if (box) { box.innerHTML = t.split("\n").map((x) => `<div class="${x.trim().startsWith("[") ? "s" : ""}">${esc(x)}</div>`).join(""); box.scrollTop = box.scrollHeight; }
     }
-    const p = await callApi("get_server_players", name);
-    const players = p.success ? (p.players || []) : [];
-    const slot = $("#sv-players");
-    if (!players.length) {
-      slot.innerHTML = `<span class="muted small">No players online.</span>`;
-    } else {
-      slot.innerHTML = players.map((x) => {
-        const pn = typeof x === "string" ? x : (x.name || x);
-        return `<span class="row" style="gap:4px"><span class="pill">${esc(pn)}</span>
-          <button class="btn sm ghost" data-p="${esc(pn)}" data-a="op" title="Toggle operator">${icon("zap",13)}</button>
-          <button class="btn sm ghost" data-p="${esc(pn)}" data-a="kick" title="Kick">${icon("x",13)}</button>
-          <button class="btn sm ghost" data-p="${esc(pn)}" data-a="ban" title="Ban">${icon("alert",13)}</button></span>`;
-      }).join("");
-      $$("[data-p][data-a]").forEach((b) => b.addEventListener("click", async () => {
-        const r = await callApi("player_action", name, b.dataset.p, b.dataset.a);
-        toast(r.success ? `${b.dataset.a} ${b.dataset.p}` : (r.error || "Failed."), r.success ? "ok" : "err");
-      }));
-    }
+    const p = await api("get_server_players", n);
+    const who = p.success ? (p.players || []) : [];
+    const slot = $("#cv-who");
+    if (slot) slot.innerHTML = who.length ? who.map((x) => {
+      const nm = typeof x === "string" ? x : (x.name || x);
+      return `<span class="inline" style="gap:3px"><span class="tag live">${esc(nm)}</span>
+        <button class="btn tiny icon flat" data-p="${esc(nm)}" data-a="op" title="Operator">${ic("cog",12)}</button>
+        <button class="btn tiny icon flat" data-p="${esc(nm)}" data-a="kick" title="Kick">${ic("x",12)}</button>
+        <button class="btn tiny icon flat" data-p="${esc(nm)}" data-a="ban" title="Ban">${ic("warn",12)}</button></span>`;
+    }).join("") : `<span class="tiny faint">Nobody online.</span>`;
+    $$("[data-p][data-a]").forEach((b) => b.addEventListener("click", async () => {
+      const r = await api("player_action", n, b.dataset.p, b.dataset.a);
+      say(r.success ? `${b.dataset.a} ${b.dataset.p}` : (r.error || "Failed."), r.success ? "good" : "bad");
+    }));
   };
   pull();
-  window.__srvPoll = setInterval(pull, 2500);
+  const send = async () => {
+    const el = $("#cv-cmd");
+    const v = el.value.trim();
+    if (!v || !SRV.sel) return;
+    const r = await api("send_server_command", SRV.sel, v);
+    if (r.success) el.value = "";
+  };
+  $("#cv-send").addEventListener("click", send);
+  $("#cv-cmd").addEventListener("keydown", (e) => { if (e.key === "Enter") send(); });
+  window.__cv = setInterval(pull, 2500);
 }
-function sendCmd() {
-  const el = $("#sv-cmd");
-  const v = el.value.trim();
-  if (!v || !SRV.sel) return;
-  callApi("send_server_command", SRV.sel, v).then((r) => { if (r.success) el.value = ""; });
-}
-async function srvPlugins(name) {
-  const r = await callApi("get_server_content", name);
-  const items = r.success ? (r.items || r.plugins || []) : [];
-  openModal("Plugins — " + name, items.length
-    ? `<table class="tbl"><tbody>${items.map((it) => {
+async function plugins(n) {
+  const r = await api("get_server_content", n);
+  const l = r.success ? (r.items || r.plugins || []) : [];
+  open("Plugins", l.length
+    ? l.map((it) => {
         const fn = typeof it === "string" ? it : (it.filename || it.name);
         const on = typeof it === "object" ? it.enabled !== false : true;
-        return `<tr><td>${esc(fn)}</td><td style="width:90px;text-align:right"><button class="btn sm ghost" onclick="callApi('toggle_server_content','${esc(name)}','${esc(fn)}',${!on}).then(()=>toast('Toggled.','ok'))">${on ? "Enabled" : "Disabled"}</button></td></tr>`;
-      }).join("")}</tbody></table>`
-    : `<div class="muted small">No plugins installed.</div>`);
+        return `<div class="row" style="padding:8px 0;border-bottom:1px solid var(--edge)">
+          <span class="grow tiny cut">${esc(fn)}</span>
+          <button class="btn tiny" onclick="api('toggle_server_content','${esc(n)}','${esc(fn)}',${!on}).then(()=>say('Toggled.','good'))">${on ? "Enabled" : "Disabled"}</button></div>`;
+      }).join("")
+    : `<div class="tiny faint">No plugins.</div>`);
 }
-async function srvMods(name) {
-  openModal("Mods — " + name, `<input class="input" id="sm-q" placeholder="Search mods"><div id="sm-r" style="margin-top:12px"></div>`);
-  const run = async () => {
-    const q = $("#sm-q").value.trim();
-    if (q.length < 2) return;
-    const r = await callApi("search_server_mods", name, q, 0);
-    const hits = r.success ? (r.hits || r.results || []) : [];
-    $("#sm-r").innerHTML = hits.map((h) => `<div class="row" style="padding:7px 0;border-bottom:1px solid var(--line-soft)">
-      <span class="grow small truncate">${esc(h.title)}</span>
-      <button class="btn sm" onclick="callApi('install_server_mod','${esc(name)}','${esc(h.id || h.project_id)}').then(x=>toast(x.success?'Installing...':(x.error||'Failed.'),x.success?'ok':'err'))">${icon("download",14)}</button></div>`).join("");
-  };
+async function srvMods(n) {
+  open("Mods", `<input type="text" id="md-q" placeholder="Search"><div id="md-r" style="margin-top:12px"></div>`);
   let t;
-  $("#sm-q").addEventListener("input", () => { clearTimeout(t); t = setTimeout(run, 380); });
-}
-
-/* ============================================================ import */
-function pageImport() {
-  return `<section class="page">
-    <div class="row" style="margin-bottom:14px">
-      <span class="muted small">Find instances already on this PC</span>
-      <span style="flex:1"></span>
-      <button class="btn primary" onclick="scanImport()">${icon("search",15)} Scan</button>
-    </div>
-    <div id="im-list"><div class="card empty">${icon("import",30)}<div>Run a scan to find Prism Launcher, PolyMC, SKLauncher and Fast Client.</div></div></div>
-  </section>`;
-}
-async function scanImport() {
-  const el = $("#im-list");
-  el.innerHTML = `<div class="card empty">${icon("refresh",28)}<div>Scanning...</div></div>`;
-  const r = await callApi("scan_import_sources");
-  const sources = r.success ? (r.sources || []) : [];
-  el.innerHTML = sources.length ? sources.map((s) => `
-    <div class="card" style="margin-bottom:10px">
-      <div class="card-h"><h2>${esc(s.label || s.launcher)}</h2>
-        <span class="pill">${(s.instances || []).length} found</span></div>
-      ${(s.instances || []).map((i) => `<div class="row" style="padding:7px 0;border-top:1px solid var(--line-soft)">
-        <span class="grow small truncate">${esc(i.name)}</span>
-        <span class="muted small">${esc(i.version || "")}</span>
-        <button class="btn sm" onclick="doImport('${esc(s.launcher)}','${esc(i.id || i.source_id)}','${esc(i.name)}')">${icon("import",14)} Import</button>
-      </div>`).join("") || `<div class="muted small">Nothing found here.</div>`}
-    </div>`).join("") : `<div class="card empty">${icon("import",30)}<div>No other launchers found.</div></div>`;
-}
-async function doImport(launcher, sourceId, name) {
-  const dest = name.replace(/[^A-Za-z0-9 _-]/g, "").trim() || name;
-  const r = await callApi("import_launcher_instance", launcher, sourceId, dest, false,
-    true, true, false, false, false, false, false);
-  toast(r.success ? "Imported " + dest : (r.error || "Import failed."), r.success ? "ok" : "err");
-}
-
-/* ============================================================ accounts */
-function pageAccounts() {
-  return `<section class="page">
-    <div class="row" style="margin-bottom:14px">
-      <span class="muted small">Offline profiles — no sign-in, nothing stored</span>
-      <span style="flex:1"></span>
-      <button class="btn primary" onclick="addAccount()">${icon("plus",15)} Add account</button>
-    </div>
-    ${STATE.accounts.length ? `<div class="grid">${STATE.accounts.map((a) => `
-      <div class="inst${a.uuid === (STATE.active_account || {}).uuid ? " on" : ""}">
-        <div class="ico">${icon("user",19)}</div>
-        <div class="grow"><div class="nm">${esc(a.name)}</div><div class="meta">Offline account</div></div>
-        <div class="row">
-          ${a.uuid === (STATE.active_account || {}).uuid ? "" : `<button class="btn sm" onclick="switchAccount('${esc(a.uuid)}')">${icon("check",14)} Use</button>`}
-          <button class="btn sm ghost danger" onclick="removeAccount('${esc(a.uuid)}')">${icon("trash",14)}</button>
-        </div>
-      </div>`).join("")}</div>`
-      : `<div class="card empty">${icon("user",30)}<div>No accounts yet.</div>
-         <button class="btn primary" onclick="addAccount()">${icon("plus",15)} Add one</button></div>`}
-  </section>`;
-}
-function addAccount() {
-  openModal("Add account", `<div class="field"><label>Username</label>
-    <input class="input" id="ac-name" maxlength="16" placeholder="Steve"></div>
-    <div class="err" id="ac-err"></div>`, async () => {
-    const r = await callApi("add_account", $("#ac-name").value);
-    if (!r.success) { $("#ac-err").textContent = r.error || "Couldn't add."; return false; }
-    toast("Added " + (r.account ? r.account.name : ""), "ok");
+  $("#md-q").addEventListener("input", (e) => {
+    clearTimeout(t);
+    t = setTimeout(async () => {
+      const q = e.target.value.trim();
+      if (q.length < 2) return;
+      const r = await api("search_server_mods", n, q, 0);
+      const h = r.success ? (r.hits || r.results || []) : [];
+      $("#md-r").innerHTML = h.map((x) => `<div class="row" style="padding:7px 0;border-bottom:1px solid var(--edge)">
+        <span class="grow tiny cut">${esc(x.title)}</span>
+        <button class="btn tiny" onclick="api('install_server_mod','${esc(n)}','${esc(x.id || x.project_id)}').then(y=>say(y.success?'Installing...':(y.error||'Failed.'),y.success?'good':'bad'))">${ic("down",13)}</button></div>`).join("");
+    }, 400);
   });
-  setTimeout(() => $("#ac-name") && $("#ac-name").focus(), 80);
-}
-async function switchAccount(uuid) { await callApi("switch_account", uuid); }
-async function removeAccount(uuid) {
-  const r = await callApi("remove_account", uuid);
-  if (!r.success) toast(r.error || "Couldn't remove.", "err");
 }
 
-/* ============================================================ settings */
-function pageSettings() {
-  const s = STATE.settings;
-  return `<section class="page"><div class="grid g2">
-    <div class="card">
-      <div class="card-h"><h2>Memory</h2></div>
-      <div class="field"><label>Maximum RAM (MB)</label>
-        <input class="input" id="st-mem" value="${s.memory_mb || 2048}"></div>
-      <button class="btn primary" style="margin-top:12px" onclick="saveMem()">Save</button>
-    </div>
-    <div class="card">
-      <div class="card-h"><h2>Appearance</h2></div>
-      <div class="field"><label>Theme</label><select class="select" id="st-theme">
-        <option value="dark" ${s.theme !== "light" ? "selected" : ""}>Dark</option>
-        <option value="light" ${s.theme === "light" ? "selected" : ""}>Light</option>
-      </select></div>
-    </div>
-    <div class="card">
-      <div class="card-h"><h2>Runtime</h2></div>
-      <div class="row" style="justify-content:space-between;padding:6px 0"><span class="muted small">Java</span><b class="small">${esc(STATE.java_version || "not detected")}</b></div>
-      <div class="row" style="justify-content:space-between;padding:6px 0"><span class="muted small">Status</span><b class="small">${STATE.java_ok ? "Ready" : "Will download on first launch"}</b></div>
-    </div>
-    <div class="card">
-      <div class="card-h"><h2>About</h2></div>
-      <div class="row" style="justify-content:space-between;padding:6px 0"><span class="muted small">Version</span><b class="small">${esc(STATE.version || "-")}</b></div>
-      <div class="row" style="justify-content:space-between;padding:6px 0"><span class="muted small">Updates</span><b class="small" id="st-upd">-</b></div>
-      <button class="btn" style="margin-top:12px" onclick="checkUpd()">${icon("refresh",14)} Check for updates</button>
-    </div>
-  </div></section>`;
+/* ==================================================== import */
+VIEWS.import = () => `<section class="view">
+  <div class="inline" style="margin-bottom:14px">
+    <span class="tiny faint">Look for instances already on this PC</span><span class="grow"></span>
+    <button class="btn go" onclick="scan()">${ic("find",14)} Scan</button>
+  </div>
+  <div id="im-b"><div class="panel"><div class="empty">${ic("import",26)}<b>Not scanned</b>
+    <div class="tiny">Prism Launcher, PolyMC, SKLauncher and Fast Client are supported.</div></div></div></div>
+</section>`;
+async function scan() {
+  const el = $("#im-b");
+  el.innerHTML = `<div class="panel"><div class="empty">${ic("restart",26)}<b>Scanning</b></div></div>`;
+  const r = await api("scan_import_sources");
+  const s = r.success ? (r.sources || []) : [];
+  el.innerHTML = s.length ? s.map((x) => `<div class="panel">
+    <header><span class="eyebrow grow">${esc(x.label || x.launcher)}</span><span class="tag">${(x.instances || []).length}</span></header>
+    <div class="rows">${(x.instances || []).map((i) => `<div class="row">
+      <div class="grow"><div class="nm cut">${esc(i.name)}</div><div class="sub">${esc(i.version || "")}</div></div>
+      <button class="btn tiny" onclick="grab('${esc(x.launcher)}','${esc(i.id || i.source_id)}','${esc(i.name)}')">${ic("import",13)} Import</button>
+    </div>`).join("") || `<div class="row tiny faint">Nothing found.</div>`}</div></div>`).join("")
+    : `<div class="panel"><div class="empty">${ic("import",26)}<b>Nothing found</b></div></div>`;
 }
+async function grab(l, sid, name) {
+  const dest = (name.replace(/[^A-Za-z0-9 _-]/g, "").trim()) || name;
+  const r = await api("import_launcher_instance", l, sid, dest, false, true, true, false, false, false, false, false);
+  say(r.success ? "Imported " + dest : (r.error || "Import failed."), r.success ? "good" : "bad");
+}
+
+/* ==================================================== accounts */
+VIEWS.accounts = () => {
+  const a = S.active_account || {};
+  return `<section class="view">
+    <div class="inline" style="margin-bottom:14px">
+      <span class="tiny faint">Offline profiles — no sign-in, nothing stored</span><span class="grow"></span>
+      <button class="btn go" onclick="addAcct()">${ic("plus",14)} Add</button>
+    </div>
+    ${S.accounts.length ? `<div class="panel"><div class="rows">${S.accounts.map((x) => `
+      <div class="row${x.uuid === a.uuid ? " sel" : ""}">
+        <div class="ico">${ic("user",17)}</div>
+        <div class="grow"><div class="nm">${esc(x.name)}</div><div class="sub">Offline account</div></div>
+        ${x.uuid === a.uuid ? `<span class="tag live">active</span>` : `<button class="btn tiny" onclick="swap('${esc(x.uuid)}')">${ic("ok",13)} Use</button>`}
+        <button class="btn tiny icon hurt" onclick="dropAcct('${esc(x.uuid)}')">${ic("trash",13)}</button>
+      </div>`).join("")}</div></div>`
+      : `<div class="panel"><div class="empty">${ic("user",26)}<b>No accounts</b>
+          <div class="tiny">Add a username to start playing.</div>
+          <div style="margin-top:14px"><button class="btn go" onclick="addAcct()">${ic("plus",14)} Add</button></div></div></div>`}
+  </section>`;
+};
+function addAcct() {
+  open("Add account", `<div><label class="fl eyebrow" for="ac-n">Username</label>
+    <input type="text" id="ac-n" maxlength="16" placeholder="Steve"></div><div class="bad" id="ac-e"></div>`, async () => {
+    const r = await api("add_account", $("#ac-n").value);
+    if (!r.success) { $("#ac-e").textContent = r.error || "Couldn't add."; return false; }
+    say("Added " + (r.account ? r.account.name : ""), "good");
+  });
+  setTimeout(() => { const e = $("#ac-n"); if (e) e.focus(); }, 90);
+}
+async function swap(u) { await api("switch_account", u); }
+async function dropAcct(u) {
+  const r = await api("remove_account", u);
+  if (!r.success) say(r.error || "Couldn't remove.", "bad");
+}
+
+/* ==================================================== settings */
+VIEWS.settings = () => {
+  const s = S.settings;
+  return `<section class="view"><div class="grid2">
+    <div class="panel"><header><span class="eyebrow grow">Memory</span></header><div class="body">
+      <label class="fl eyebrow" for="se-m">Maximum RAM (MB)</label>
+      <input type="number" id="se-m" value="${s.memory_mb || 2048}">
+      <div style="margin-top:12px"><button class="btn go" onclick="saveMem()">Save</button></div>
+    </div></div>
+    <div class="panel"><header><span class="eyebrow grow">Appearance</span></header><div class="body">
+      <label class="fl eyebrow" for="se-m2">Theme</label>
+      <select id="se-m2"><option value="dark"${s.theme === "light" ? "" : " selected"}>Dark</option>
+        <option value="light"${s.theme === "light" ? " selected" : ""}>Light</option></select>
+    </div></div>
+    <div class="panel"><header><span class="eyebrow grow">Runtime</span></header><div class="rows">
+      <div class="row"><span class="grow tiny muted">Java</span><span class="tag">${esc(S.java_version || "not detected")}</span></div>
+      <div class="row"><span class="grow tiny muted">Status</span><span class="tag">${S.java_ok ? "ready" : "downloads on first launch"}</span></div>
+    </div></div>
+    <div class="panel"><header><span class="eyebrow grow">About</span></header><div class="body">
+      <div class="rows" style="border:1px solid var(--edge);border-radius:4px">
+        <div class="row"><span class="grow tiny muted">Version</span><span class="tag">${esc(S.version || "-")}</span></div>
+        <div class="row"><span class="grow tiny muted">Updates</span><span class="tag" id="se-u">-</span></div>
+      </div>
+      <div style="margin-top:12px"><button class="btn" onclick="checkUpd()">${ic("restart",14)} Check for updates</button></div>
+    </div></div>
+  </div></section>`;
+};
 async function saveMem() {
-  const r = await callApi("save_settings", { memory_mb: Number($("#st-mem").value) || 2048 });
-  toast(r.success ? "Saved." : (r.error || "Couldn't save."), r.success ? "ok" : "err");
+  const r = await api("save_settings", { memory_mb: Number($("#se-m").value) || 2048 });
+  say(r.success ? "Saved." : (r.error || "Couldn't save."), r.success ? "good" : "bad");
 }
 async function checkUpd() {
-  const el = $("#st-upd");
-  if (el) el.textContent = "Checking...";
-  const r = await callApi("check_for_updates", true);
-  if (el) el.textContent = r.success ? (r.available ? "Update available" : "Up to date") : (r.error || "Unavailable");
-  const log = await callApi("get_changelog", true);
-  if (log.success && (log.text || "").trim()) {
-    openModal("Changelog — " + (log.tag || ""), `<div class="hint">${esc(log.name || "")} ${esc(log.date || "")}</div>
-      <div class="log" style="height:auto;max-height:50vh">${esc(log.text)}</div>`);
-  } else if (!log.success && log.error) {
-    toast(log.error, "err");
+  const el = $("#se-u");
+  if (el) el.textContent = "checking...";
+  const r = await api("check_for_updates", true);
+  if (el) el.textContent = r.success ? (r.available ? "update ready" : "current") : (r.error || "unavailable");
+  const c = await api("get_changelog", true);
+  if (c.success && (c.text || "").trim()) {
+    open("Changelog — " + (c.tag || ""), `<div class="tiny faint">${esc(c.name || "")} ${esc(c.date || "")}</div>
+      <div class="code" style="height:auto;max-height:46vh">${esc(c.text)}</div>`);
   }
 }
 
-/* ============================================================ modal */
-let modalCb = null;
-function openModal(title, bodyHtml, onSave) {
-  modalCb = onSave || null;
-  $("#modal").innerHTML = `
-    <div class="modal-h"><h2>${esc(title)}</h2></div>
-    <div class="modal-b">${bodyHtml}</div>
-    <div class="modal-f">
-      ${modalCb ? `<button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" id="modal-save">Save</button>` : `<button class="btn" onclick="closeModal()">Close</button>`}
-    </div>`;
-  $("#modal-root").classList.add("on");
-  if (modalCb) $("#modal-save").addEventListener("click", async () => {
-    const ok = await modalCb();
-    if (ok !== false) closeModal();
+/* ==================================================== sheet */
+let onSave = null;
+function open(title, html, save) {
+  onSave = save || null;
+  $("#sheet").innerHTML = `<h2>${esc(title)}</h2><div class="in">${html}</div>
+    <div class="foot">${onSave
+      ? `<button class="btn flat" onclick="close()">Cancel</button><button class="btn go" id="sheet-ok">Save</button>`
+      : `<button class="btn flat" onclick="close()">Close</button>`}</div>`;
+  $("#scrim").classList.add("on");
+  if (onSave) $("#sheet-ok").addEventListener("click", async () => {
+    if (await onSave() !== false) close();
   });
 }
-function closeModal() {
-  $("#modal-root").classList.remove("on");
-  $("#modal").innerHTML = "";
-  modalCb = null;
-  if (window.__srvPoll) { clearInterval(window.__srvPoll); window.__srvPoll = null; SRV.sel = null; }
+function close() {
+  $("#scrim").classList.remove("on");
+  $("#sheet").innerHTML = "";
+  onSave = null;
+  if (window.__cv) { clearInterval(window.__cv); window.__cv = null; SRV.sel = null; }
 }
-$("#modal-root").addEventListener("click", (e) => { if (e.target.hasAttribute("data-close")) closeModal(); });
-document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+$("#scrim").addEventListener("click", (e) => { if (e.target === $("#scrim") || e.target.id === "scrim") close(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
 
-/* ============================================================ events */
+/* ==================================================== events */
 window.__lodestoneEvent = function (name, data) {
   data = data || {};
   switch (name) {
     case "stateChanged":
-      STATE = data;
-      if (!SRV.loaded) SRV.list = [];
-      renderShell();
+      S = data;
+      repaint();
       break;
     case "installStarted":
-      PROGRESS = { title: data.title, percent: 0, current: "Preparing", unit: "bytes", downloaded: 0, total: 1 };
-      toast(data.title || "Installing...");
+      BUSY = { title: data.title, percent: 0 };
+      say(data.title || "Installing...");
       break;
     case "installProgress":
-      if (!PROGRESS) PROGRESS = { title: "Installing" };
-      Object.assign(PROGRESS, data);
-      renderShell();
+      BUSY = Object.assign({ title: "Installing" }, data);
+      repaint();
       break;
     case "installFinished":
-      PROGRESS = null;
-      toast(data.message || "Done.", "ok");
-      renderShell();
+      BUSY = null;
+      say(data.message || "Done.", "good");
+      repaint();
       break;
     case "installError":
-      PROGRESS = null;
-      toast(data.message || "Install failed.", "err");
-      renderShell();
+      BUSY = null;
+      say(data.message || "Install failed.", "bad");
+      repaint();
       break;
     case "launchStarted":
-      toast("Launching " + (data.instance || "") + "...", "ok");
+      say("Launching " + (data.instance || "") + "...", "good");
       break;
     case "launchEnded":
-      toast(data.instance + " closed.", "ok");
+      say((data.instance || "Game") + " closed.", "good");
       break;
     case "launchError":
-      toast(data.message || "The game closed unexpectedly.", "err");
+      say(data.message || "The game closed unexpectedly.", "bad");
       break;
     case "serverLine":
       if (SRV.sel === data.name) {
-        const el = $("#sv-log");
+        const el = $("#cv-log");
         if (el) { el.insertAdjacentHTML("beforeend", `<div>${esc(data.line || "")}</div>`); el.scrollTop = el.scrollHeight; }
       }
       break;
     case "toast":
-      toast(data.message || "", data.kind || "");
+      say(data.message || "", data.kind || "");
       break;
   }
 };
 
-/* ============================================================ boot */
-$("#nav").addEventListener("click", (e) => {
-  const b = e.target.closest("[data-go]");
-  if (b) go(b.dataset.go);
+/* ==================================================== boot */
+$("#tabs").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-t]");
+  if (b) go(b.dataset.t);
 });
-$("#btn-play").addEventListener("click", playActive);
-
-async function boot() {
-  const r = await callApi("get_state");
-  if (r.success && r.state) STATE = r.state;
-  const d = await callApi("get_disk_usage", "instances");
-  if (d.success) DISK.instances = d.sizes;
-  const s = await callApi("get_disk_usage", "servers");
-  if (s.success) DISK.servers = s.sizes;
-  applyTheme(STATE.settings.theme);
-  connectEvents();
-  renderShell();
-  go("home");
-  setInterval(async () => {
-    const x = await callApi("get_state");
-    if (x.success && x.state) { STATE = x.state; renderShell(); }
-  }, 5000);
-}
-function applyTheme(t) {
-  document.documentElement.setAttribute("data-theme", t === "light" ? "light" : "dark");
-  const sel = $("#st-theme");
-  if (sel) sel.value = t === "light" ? "light" : "dark";
-}
-// Bound once: applyTheme runs on every state change, and re-binding here
-// stacked a duplicate listener each time.
+$("#go-play").addEventListener("click", play);
 document.addEventListener("change", (e) => {
-  if (e.target.id === "st-theme") {
-    applyTheme(e.target.value);
-    callApi("save_settings", { theme: e.target.value });
+  if (e.target.id === "se-m2") {
+    // Go through mode() so the persisted name maps to the attribute the CSS
+    // actually keys on: light -> day. Setting it raw left every block unmatched.
+    mode(e.target.value);
+    api("save_settings", { theme: e.target.value });
   }
 });
-boot();
+// The stored preference is "light"/"dark"; the attribute the CSS keys on is
+// "day"/"dark". Keep the mapping in one place.
+function mode(t) {
+  document.documentElement.setAttribute("data-mode", t === "light" ? "day" : "dark");
+  const sel = $("#se-m2");
+  if (sel) sel.value = t === "light" ? "light" : "dark";
+}
+(async function start() {
+  const r = await api("get_state");
+  if (r.success && r.state) S = r.state;
+  const a = await api("get_disk_usage", "instances");
+  if (a.success) SIZE.instances = a.sizes;
+  const b = await api("get_disk_usage", "servers");
+  if (b.success) SIZE.servers = b.sizes;
+  mode(S.settings.theme);
+  listen();
+  repaint();
+  go("home");
+  setInterval(async () => {
+    const x = await api("get_state");
+    if (x.success && x.state) { S = x.state; repaint(); }
+  }, 5000);
+})();
 </script>
 </body>
 </html>
